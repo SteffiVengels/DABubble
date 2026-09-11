@@ -1,0 +1,41 @@
+<form action="">
+    <h1>Anmeldung</h1>
+    <p>Wir empfehlen dir, die E-Mail-Adresse zu nutzen, die du bei der Arbeit verwendest.</p>
+
+    <!-- E-Mail -->
+    <div class="field">
+        <label for="email">E-Mail-Adresse</label>
+        <span class="icon" aria-hidden="true"><!-- Mail-Icon --></span>
+        <input type="email" id="email" name="email" autocomplete="email" placeholder="beispielname@email.com" required
+            aria-describedby="auth-hint email-error" aria-invalid="false" />
+        <p id="email-error" class="error" role="alert" hidden>
+            *Diese E-Mail-Adresse ist leider ungültig.
+        </p>
+    </div>
+
+    <!-- Passwort -->
+    <div class="field">
+        <label for="password">Passwort</label>
+        <span class="icon" aria-hidden="true"><!-- Schloss-Icon --></span>
+        <input type="password" id="password" name="password" autocomplete="current-password" placeholder="Passwort"
+            required aria-describedby="password-error" aria-invalid="false" />
+        <p id="password-error" class="error" role="alert" hidden>
+            Falsches Passwort oder E-Mail.. Bitte noch einmal versuchen.
+        </p>
+    </div>
+
+    <a href="/passwort-reset" class="forgot">Passwort vergessen?</a>
+
+    <!-- Trenner -->
+    <div class="divider" role="separator" aria-hidden="true">ODER</div>
+
+    <button type="button" class="google-btn">
+        <span class="icon" aria-hidden="true"><!-- Google-Logo --></span>
+        Anmelden mit Google
+    </button>
+
+    <div class="actions">
+        <button type="submit">Anmelden</button>
+        <button type="button" class="guest">Gäste-Login</button>
+    </div>
+</form>

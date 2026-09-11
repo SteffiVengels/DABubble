@@ -1,0 +1,52 @@
+:host {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: stretch;
+    padding: 72px;
+    gap: 72px;
+}
+
+main {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-grow: 1;
+
+}
+
+footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+ul {
+    list-style: none;
+    display: flex;
+    gap: 16px;
+}
+
+.logo {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    height: fit-content;
+    align-items: center;
+
+    >img {
+        height: 70px;
+    }
+}
+
+.sign-up-link {
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 16px;
+
+    >p {
+        text-align: end;
+    }
+}

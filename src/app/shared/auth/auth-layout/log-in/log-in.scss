@@ -1,0 +1,35 @@
+form {
+    max-width: 606px;
+    max-height: 769px;
+    height: 100%;
+    background-color: white;
+    border-radius: 30px;
+    padding: 50px 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+}
+
+label {
+    display: none;
+}
+
+.field {
+    width: 100%;
+    background-color: var(--bg-color);
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    border-radius: 100px;
+    padding: 18px 32px;
+}
+
+input {
+    background-color: transparent;
+    border: none;
+}
+
+input:focus {
+    outline: none;
+}
