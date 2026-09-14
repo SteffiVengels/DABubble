@@ -1,6 +1,29 @@
 /* You can add global styles to this file, and also import other style files */
 :root {
     --bg-color: #ECEEFE;
+    --light-purple: #ADB0D9;
+    --purple1: #444DF2;
+    --purple2: #797EF3;
+    --purple3: #535AF1;
+    --text-grey: #686868;
+}
+
+@font-face {
+    font-display: swap;
+    /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+    font-family: 'Nunito';
+    font-style: normal;
+    src: url('./assets/fonts/Nunito/Nunito-VariableFont_wght.ttf') format('woff2');
+    /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+
+@font-face {
+    font-display: swap;
+    /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+    font-family: 'Figtree';
+    font-style: normal;
+    src: url('./assets/fonts/Figtree/Figtree-VariableFont_wght.ttf') format('woff2');
+    /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
 }
 
 * {
@@ -10,6 +33,75 @@
 
 body {
     background-color: var(--bg-color);
-    height: 100vh;
-    height: 100dvh;
+    min-height: 100vh;
+    min-height: 100dvh;
+    font-family: 'Nunito';
+    font-size: 18px;
+}
+
+a {
+    text-decoration: none;
+    border-radius: 30px;
+    padding: 10px 15px;
+    border: 1px solid transparent;
+    color: var(--purple2);
+    font-family: 'Figtree';
+    
+}
+
+a:hover {
+    color: var(--purple1);
+    font-weight: 500;
+    border: 1px solid var(--light-purple);
+}
+
+button {
+    padding: 12px 25px;
+    border-radius: 25px;
+    border: none;
+    background-color: var(--purple1);
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: var(--purple2);
+}
+
+button:active {
+    background-color: var(--purple1);
+}
+
+button:disabled {
+    background-color: var(--text-grey);
+}
+
+.secondary {
+    color: var(--purple1);
+    background-color: transparent;
+    border: 1px solid var(--purple2);
+}
+
+.secondary:hover {
+    color: white;
+    border: 1px solid var(--purple3);
+    background-color: var(--purple3);
+}
+
+.secondary:active {
+    color: white;
+    border: 1px solid var(--purple1);
+    background-color: var(--purple1);
+}
+
+.secondary:disabled {
+    color: var(--text-grey);
+    border: 1px solid var(--text-grey);
+}
+
+h1 {
+    font-size: 2.556rem;
+    font-weight: 700;
+    color: var(--purple1);
 }

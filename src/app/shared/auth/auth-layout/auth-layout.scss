@@ -2,9 +2,10 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: stretch;
-    padding: 72px;
-    gap: 72px;
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: clamp(16px, 5.26vw - 3.7px, 72px);
+    gap: clamp(16px, 5.26vw - 3.7px, 72px);
 }
 
 main {
@@ -12,6 +13,7 @@ main {
     flex-direction: row;
     justify-content: space-between;
     flex-grow: 1;
+    gap: clamp(16px, 5.26vw - 3.7px, 72px);
 
 }
 
@@ -25,6 +27,7 @@ ul {
     list-style: none;
     display: flex;
     gap: 16px;
+    padding-inline-start: 0px;
 }
 
 .logo {
@@ -37,6 +40,10 @@ ul {
     >img {
         height: 70px;
     }
+
+    >.logo_name {
+        height: 24px;
+    }
 }
 
 .sign-up-link {
@@ -45,8 +52,33 @@ ul {
     flex-direction: column;
     align-items: flex-end;
     gap: 16px;
+    min-width: max-content;
+    width: 243px;
 
     >p {
         text-align: end;
     }
+}
+
+@media screen and (max-width:1280px) {
+    main {
+        flex-direction: column;
+        align-items: center;
+        gap: 32px;
+    }
+
+    .logo {
+        >img {
+            height: 56px;
+        }
+
+        >.logo_name {
+            height: 20px;
+        }
+    }
+
+    .sign-up-link {
+        align-items: center;
+    }
+
 }

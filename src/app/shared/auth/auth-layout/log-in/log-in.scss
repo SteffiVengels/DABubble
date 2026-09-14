@@ -4,11 +4,16 @@ form {
     height: 100%;
     background-color: white;
     border-radius: 30px;
-    padding: 50px 60px;
+    padding: clamp(35px, 1.41vw + 29.72px, 50px) clamp(20px, 3.76vw + 5.92px, 60px);
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 30px;
     justify-content: space-between;
+
+    >p {
+        text-align: center;
+    }
 }
 
 label {
@@ -32,4 +37,77 @@ input {
 
 input:focus {
     outline: none;
+}
+
+.icon {
+    height: 24px;
+}
+
+.forgot {
+    padding: 5px 15px;
+    font-family: 'Figtree';
+}
+
+.forgot:hover {
+    border: 1px solid transparent;
+    background-color: var(--bg-color);
+}
+
+.actions {
+    display: flex;
+    gap: 30px;
+}
+
+.icon-google {
+    height: 38px;
+}
+
+.google-btn {
+    width: 100%;
+    height: fit-content;
+    padding: 11px 32px;
+    border-radius: 100px;
+    border: 1px solid var(--bg-color);
+    color: var(--purple1);
+    font-weight: 400;
+    background-color: var(--bg-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.google-btn:hover {
+    border-color: var(--purple1);
+    font-weight: 700;
+}
+
+.google-btn:active {
+    border-color: var(--text-grey);
+    font-weight: 500;
+}
+
+.divider-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    gap: 15px;
+}
+
+.divider {
+    height: 1px;
+    width: 100%;
+    background-color: var(--light-purple);
+}
+
+@media screen and (max-width:768px) {
+
+    form {
+        gap: 20px;
+    }
+
+    .actions {
+        gap: 20px;
+    }
 }
