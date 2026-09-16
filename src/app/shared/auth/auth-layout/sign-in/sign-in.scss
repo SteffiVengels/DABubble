@@ -1,1 +1,6 @@
 @use '../../auth-form';
+
+:host {
+    display: flex;
+    align-items: center;
+}

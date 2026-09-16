@@ -1,5 +1,6 @@
-<form action="">
-    <a class="go-back" href=""></a>
+@if (step() === 'form') {
+<form (ngSubmit)="goToAvatar()">
+    <a class="go-back" routerLink="/auth/login"></a>
     <h1 class="auth-headline">Konto erstellen</h1>
 
     <p>Mit deinem Namen und deiner E-Mail-Adresse hast du dein neues DABubble-Konto.</p>
@@ -53,3 +54,6 @@
     <button class="next-btn" type="submit">Weiter</button>
 
 </form>
+} @else {
+<app-choose-avatar (goBack)="goBackToForm()" />
+}
