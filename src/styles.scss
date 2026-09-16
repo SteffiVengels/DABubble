@@ -105,3 +105,7 @@ h1 {
     font-weight: 700;
     color: var(--purple1);
 }
+
+router-outlet {
+  display: none;
+}
