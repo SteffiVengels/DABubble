@@ -46,7 +46,7 @@ a {
     border: 1px solid transparent;
     color: var(--purple2);
     font-family: 'Figtree';
-    
+
 }
 
 a:hover {
@@ -107,5 +107,26 @@ h1 {
 }
 
 router-outlet {
-  display: none;
+    display: none;
+}
+
+.headline3 {
+    font-weight: 700;
+    font-size: 1.778rem;
+    width: 100%;
+    text-align: center;
+}
+
+@media screen and (max-width:768px) {
+
+    h1 {
+        font-size: 2.111rem;
+    }
+}
+
+@media screen and (max-width:480px) {
+
+    h1 {
+        font-size: 1.778rem;
+    }
 }

@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
-import { RouterLink, RouterOutlet } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
+import { filter, map } from 'rxjs/operators';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 
 @Component({
@@ -9,5 +11,13 @@ import { RouterLink, RouterOutlet } from '@angular/router';
   styleUrl: './auth-layout.scss',
 })
 export class AuthLayout {
+  private router = inject(Router);
 
+  isLogInPage = toSignal(
+    this.router.events.pipe(
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+      map(() => this.router.url.startsWith('/auth/login'))
+    ),
+    { initialValue: this.router.url.startsWith('/auth/login') }
+  );
 }
