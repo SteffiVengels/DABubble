@@ -1,57 +1,79 @@
 @if (step() === 'form') {
-<form (ngSubmit)="goToAvatar()">
+<form [formGroup]="signUpForm" (ngSubmit)="goToAvatar()">
     <a class="go-back" routerLink="/auth/login"></a>
     <h1 class="auth-headline">Konto erstellen</h1>
 
     <p>Mit deinem Namen und deiner E-Mail-Adresse hast du dein neues DABubble-Konto.</p>
 
     <!-- Name -->
-    <div class="field">
-        <label for="name">Name</label>
-        <span class="icon" aria-hidden="true"><img src="/img/icons/person_filled.png" alt=""></span>
-        <input type="text" id="name" name="name" autocomplete="name" placeholder="Name und Nachname" required
-            aria-describedby="auth-hint name-error" aria-invalid="false" />
-        <p id="name-error" class="error" role="alert" hidden>
-            *Bitte schreiben Sie einen Namen.
+    <div class="width-100">
+        <div class="field">
+            <label for="name">Name</label>
+            <span class="icon" aria-hidden="true"><img src="/img/icons/person_filled.png" alt=""></span>
+            <input type="text" id="name" name="name" formControlName="name" autocomplete="name"
+                placeholder="Name und Nachname" required aria-describedby="auth-hint name-error" aria-invalid="false" />
+        </div>
+        @if (signUpForm.get('name')?.invalid && signUpForm.get('name')?.touched) {
+        <p id="name-error" class="error" role="alert">
+            Bitte schreiben Sie einen Namen.
         </p>
+        }
     </div>
+
 
     <!-- E-Mail -->
-    <div class="field">
-        <label for="email">E-Mail-Adresse</label>
-        <span class="icon" aria-hidden="true"><img src="/img/icons/mail.png" alt=""></span>
-        <input type="email" id="email" name="email" autocomplete="email" placeholder="beispielname@email.com" required
-            aria-describedby="auth-hint email-error" aria-invalid="false" />
-        <p id="email-error" class="error" role="alert" hidden>
-            *Diese E-Mail-Adresse ist leider ungültig.
+    <div class="width-100">
+        <div class="field">
+            <label for="email">E-Mail-Adresse</label>
+            <span class="icon" aria-hidden="true"><img src="/img/icons/mail.png" alt=""></span>
+            <input type="email" id="email" name="email" formControlName="email" autocomplete="email"
+                placeholder="beispielname@email.com" required aria-describedby="auth-hint email-error"
+                aria-invalid="false" />
+        </div>
+        @if (signUpForm.get('email')?.invalid && signUpForm.get('email')?.touched) {
+        <p id="email-error" class="error" role="alert">
+            Diese E-Mail-Adresse ist leider ungültig.
         </p>
+        }
     </div>
+
 
     <!-- Passwort -->
-    <div class="field">
-        <label for="password">Passwort</label>
-        <span class="icon" aria-hidden="true"><img src="/img/icons/lock.png" alt=""></span>
-        <input type="password" id="password" name="password" autocomplete="current-password" placeholder="Passwort"
-            required aria-describedby="password-error" aria-invalid="false" />
-        <p id="password-error" class="error" role="alert" hidden>
-            Falsches Passwort oder E-Mail.. Bitte noch einmal versuchen.
+    <div class="width-100">
+        <div class="field">
+            <label for="password">Passwort</label>
+            <span class="icon" aria-hidden="true"><img src="/img/icons/lock.png" alt=""></span>
+            <input type="password" id="password" name="password" formControlName="password"
+                autocomplete="current-password" placeholder="Passwort" required aria-describedby="password-error"
+                aria-invalid="false" />
+        </div>
+        @if (signUpForm.get('password')?.invalid && signUpForm.get('password')?.touched) {
+        <p id="password-error" class="error" role="alert">
+            Bitte geben Sie ein Passwort ein.
         </p>
+        }
     </div>
+
 
     <!-- Datenschutz -->
-    <div class="checkbox-field">
-        <input type="checkbox" id="privacy" name="privacy" required aria-describedby="privacy-error"
-            aria-invalid="false" />
-        <label class="privacy-label" for="privacy">
-            Ich stimme der
-            <a class="forgot" href="#" routerLink="/datenschutz">Datenschutzerklärung</a> zu.
-        </label>
-        <p id="privacy-error" class="error" role="alert" hidden>
-            *Bitte stimmen Sie der Datenschutzerklärung zu.
+    <div class="width-100">
+        <div class="checkbox-field">
+            <input type="checkbox" id="privacy" name="privacy" formControlName="privacyPolicy"
+                aria-describedby="privacy-error" aria-invalid="false" />
+            <label class="privacy-label" for="privacy">
+                Ich stimme der
+                <a class="forgot" href="#" routerLink="/datenschutz">Datenschutzerklärung</a> zu.
+            </label>
+        </div>
+        @if (signUpForm.get('privacyPolicy')?.invalid && signUpForm.get('privacyPolicy')?.touched) {
+        <p id="privacy-error" class="error" role="alert">
+            Bitte stimmen Sie der Datenschutzerklärung zu.
         </p>
+        }
     </div>
 
-    <button class="next-btn" type="submit">Weiter</button>
+
+    <button class="next-btn" type="submit" [disabled]="!signUpForm.valid">Weiter</button>
 
 </form>
 } @else {

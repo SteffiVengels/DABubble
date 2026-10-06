@@ -35,6 +35,7 @@ label {
 input {
     background-color: transparent;
     border: none;
+    width: 100%;
 }
 
 input:focus {
@@ -229,6 +230,11 @@ input:focus {
 
 .color-grey {
     color: var(--text-grey);
+}
+
+.error {
+    font-size: 0.778rem;
+    color: var(--error);
 }
 
 

@@ -6,6 +6,7 @@
     --purple2: #797EF3;
     --purple3: #535AF1;
     --text-grey: #686868;
+    --error: #ED1E79;
 }
 
 @font-face {
@@ -115,6 +116,10 @@ router-outlet {
     font-size: 1.778rem;
     width: 100%;
     text-align: center;
+}
+
+.width-100 {
+    width: 100%;
 }
 
 @media screen and (max-width:768px) {

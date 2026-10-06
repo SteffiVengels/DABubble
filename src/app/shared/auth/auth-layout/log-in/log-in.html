@@ -1,28 +1,41 @@
-<form action="">
+<form [formGroup]="logInForm" (ngSubmit)="onSubmit()">
     <h1 class="auth-headline">Anmeldung</h1>
     <p>Wir empfehlen dir, die E-Mail-Adresse zu nutzen, die du bei der Arbeit verwendest.</p>
 
     <!-- E-Mail -->
-    <div class="field">
-        <label for="email">E-Mail-Adresse</label>
-        <span class="icon" aria-hidden="true"><img src="/img/icons/mail.png" alt=""></span>
-        <input type="email" id="email" name="email" autocomplete="email" placeholder="beispielname@email.com" required
-            aria-describedby="auth-hint email-error" aria-invalid="false" />
-        <p id="email-error" class="error" role="alert" hidden>
-            *Diese E-Mail-Adresse ist leider ungültig.
+    <div class="width-100">
+        <div class="field">
+            <label for="email">E-Mail-Adresse</label>
+            <span class="icon" aria-hidden="true"><img src="/img/icons/mail.png" alt=""></span>
+            <input type="email" id="email" name="email" formControlName="email" autocomplete="email"
+                placeholder="beispielname@email.com" aria-describedby="auth-hint email-error" aria-invalid="false" />
+
+        </div>
+        @if (logInForm.get('email')?.invalid && logInForm.get('email')?.touched) {
+        <p id="email-error" class="error" role="alert">
+            Diese E-Mail-Adresse ist leider ungültig.
         </p>
+        }
     </div>
 
+
     <!-- Passwort -->
-    <div class="field">
-        <label for="password">Passwort</label>
-        <span class="icon" aria-hidden="true"><img src="/img/icons/lock.png" alt=""></span>
-        <input type="password" id="password" name="password" autocomplete="current-password" placeholder="Passwort"
-            required aria-describedby="password-error" aria-invalid="false" />
-        <p id="password-error" class="error" role="alert" hidden>
+    <div class="width-100">
+        <div class="field">
+            <label for="password">Passwort</label>
+            <span class="icon" aria-hidden="true"><img src="/img/icons/lock.png" alt=""></span>
+            <input type="password" id="password" name="password" formControlName="password"
+                autocomplete="current-password" placeholder="Passwort" aria-describedby="password-error"
+                aria-invalid="false" />
+
+        </div>
+        @if (logInForm.get('password')?.invalid && logInForm.get('password')?.touched) {
+        <p id="password-error" class="error" role="alert">
             Falsches Passwort oder E-Mail.. Bitte noch einmal versuchen.
         </p>
+        }
     </div>
+
 
     <div class="forgot-wrapper">
         <a routerLink="/auth/reset-password" class="forgot">Passwort vergessen?</a>
@@ -41,7 +54,7 @@
     </button>
 
     <div class="actions">
-        <button type="submit">Anmelden</button>
+        <button type="submit" [disabled]="!logInForm.valid">Anmelden</button>
         <button type="button" class="secondary" routerLink="/messenger">Gäste-Login</button>
     </div>
 </form>
