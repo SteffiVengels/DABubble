@@ -31,6 +31,7 @@ export class LogIn {
       if (user) {
         if (user.password === password) {
           console.log('Login successful for user:', user);
+          // update the user's online status in the database
         } else {
           console.log('Invalid password, please try again or reset your password');
           // Handle login logic here, e.g., call an authentication service
@@ -43,6 +44,6 @@ export class LogIn {
       }
       this.logInForm.reset();
     }
-    
+
   }
 }
