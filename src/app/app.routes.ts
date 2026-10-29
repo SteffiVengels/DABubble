@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { AuthLayout } from './shared/auth/auth-layout/auth-layout';
 import { LogIn } from './shared/auth/auth-layout/log-in/log-in';
-import { SignIn } from './shared/auth/auth-layout/sign-in/sign-in';
+import { SignUp } from './shared/auth/auth-layout/sign-up/sign-up';
 import { ResetPassword } from './shared/auth/auth-layout/reset-password/reset-password';
 import { LegalNotice } from './shared/legal-notice/legal-notice';
 import { PrivacyPolice } from './shared/privacy-police/privacy-police';
@@ -14,7 +14,7 @@ export const routes: Routes = [
     component: AuthLayout,
     children: [
       { path: 'login', component: LogIn },
-      { path: 'signup', component: SignIn },
+      { path: 'signup', component: SignUp },
       { path: 'reset-password', component: ResetPassword },
       { path: '', redirectTo: 'login', pathMatch: 'full' },
     ],

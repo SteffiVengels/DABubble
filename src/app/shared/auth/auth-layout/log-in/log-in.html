@@ -29,7 +29,7 @@
                 aria-invalid="false" />
 
         </div>
-        @if (logInForm.get('password')?.invalid && logInForm.get('password')?.touched) {
+        @if ((logInForm.get('password')?.invalid && logInForm.get('password')?.touched) || loginError()) {
         <p id="password-error" class="error" role="alert">
             Falsches Passwort oder E-Mail.. Bitte noch einmal versuchen.
         </p>

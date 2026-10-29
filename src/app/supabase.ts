@@ -49,7 +49,30 @@ export class Supabase {
     }
   }
 
-  async addUser(user: Pick<User, 'name' | 'email' | 'password' | 'privacy_policy'>) {
+  async signUp(email: string, password: string) {
+    const { data, error } = await this.supabase.auth.signUp({ email, password });
+    if (error) {
+      console.error('Error signing up:', error);
+      return null;
+    }
+    return data.user;
+  }
+
+  async signIn(email: string, password: string) {
+    const { data, error } = await this.supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      console.error('Error signing in:', error);
+      return null;
+    }
+    return data.user;
+  }
+
+  async signOut() {
+    const { error } = await this.supabase.auth.signOut();
+    if (error) console.error('Error signing out:', error);
+  }
+
+  async addUser(user: Pick<User, 'id' | 'name' | 'email' | 'privacy_policy' | 'avatar'>) {
     const { data, error } = await this.supabase
       .from('users')
       .insert(user)
