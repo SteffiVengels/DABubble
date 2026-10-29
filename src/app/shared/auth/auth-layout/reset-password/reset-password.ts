@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Supabase } from '../../../../supabase';
 
 @Component({
   selector: 'app-reset-password',
@@ -13,13 +14,15 @@ export class ResetPassword {
     email: new FormControl('', [Validators.required, Validators.email]),
   });
 
-  onSubmit() {
-    if (this.resetPasswordForm.invalid) {
-      const email = this.resetPasswordForm.get('email')?.value;
-      // Handle reset password logic here, e.g., call a password reset service
-      console.log('Resetting password for', email);
-      this.resetPasswordForm.reset();
-    }
+  dbService = inject(Supabase);
+  mailSent = signal(false);
+
+  async onSubmit() {
+    if (this.resetPasswordForm.invalid) return;
+    const { email } = this.resetPasswordForm.getRawValue();
+    const success = await this.dbService.sendPasswordResetMail(email ?? '');
+    this.mailSent.set(success);
   }
+
 
 }

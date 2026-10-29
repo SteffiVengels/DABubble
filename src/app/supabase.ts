@@ -84,4 +84,19 @@ export class Supabase {
     return data[0];
   }
 
+  async sendPasswordResetMail(email: string) {
+    const { error } = await this.supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth/new-password`,
+    });
+    if (error) console.error('Error sending reset mail:', error);
+    return !error;
+  }
+
+  async updatePassword(password: string) {
+    const { error } = await this.supabase.auth.updateUser({ password });
+    if (error) console.error('Error updating password:', error);
+    return !error;
+  }
+
+
 }

@@ -6,6 +6,7 @@ import { ResetPassword } from './shared/auth/auth-layout/reset-password/reset-pa
 import { LegalNotice } from './shared/legal-notice/legal-notice';
 import { PrivacyPolice } from './shared/privacy-police/privacy-police';
 import { Messenger } from './shared/messenger/messenger';
+import { NewPassword } from './shared/auth/auth-layout/new-password/new-password';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'auth/login', pathMatch: 'full' },
@@ -17,6 +18,8 @@ export const routes: Routes = [
       { path: 'signup', component: SignUp },
       { path: 'reset-password', component: ResetPassword },
       { path: '', redirectTo: 'login', pathMatch: 'full' },
+      { path: 'new-password', component: NewPassword },
+
     ],
   },
   { path: 'impressum', component: LegalNotice },

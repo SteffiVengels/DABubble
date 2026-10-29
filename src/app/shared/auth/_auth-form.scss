@@ -1,6 +1,6 @@
 form {
-    max-width: 606px;
-    max-height: 769px;
+    max-width: 640px;
+    max-height: 800px;
     background-color: white;
     border-radius: 30px;
     box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.08);
@@ -280,4 +280,12 @@ input:focus {
     .avatar-big {
         width: 120px;
     }
+}
+
+@media screen and (min-width:769px) {
+
+    .no-padding {
+        padding: 0;
+    }
+
 }
