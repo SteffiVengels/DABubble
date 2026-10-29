@@ -1,5 +1,6 @@
 import { Injectable, signal } from '@angular/core';
-import { createClient, RealtimeChannel } from '@supabase/supabase-js'
+import { createClient, RealtimeChannel } from '@supabase/supabase-js';
+import { User } from './shared/interfaces/user';
 
 @Injectable({
   providedIn: 'root',
@@ -9,7 +10,7 @@ export class Supabase {
   supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRzYW5qdnFwdWxvbmRxaGl1YnpnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyODc2OTcsImV4cCI6MjEwNjg2MzY5N30.F3jP0ZMRIgG4irEtfOVPNT7x-m_ZyompFj5dIfSNAR8';
   public supabase = createClient(this.supabaseUrl, this.supabaseKey);
 
-  users = signal<{ id: number; created_at: string; name: string; email: string, password: string, privacy_policy: boolean, avatar: string, online: boolean }[]>([])
+  users = signal<User[]>([]);
   channel: RealtimeChannel | undefined;
 
   constructor() {
@@ -48,7 +49,7 @@ export class Supabase {
     }
   }
 
-  async addUser(user: { name: string; email: string; password: string; privacy_policy: boolean }) {
+  async addUser(user: Pick<User, 'name' | 'email' | 'password' | 'privacy_policy'>) {
     const { data, error } = await this.supabase
       .from('users')
       .insert(user)
