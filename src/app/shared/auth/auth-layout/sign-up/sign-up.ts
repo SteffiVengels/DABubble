@@ -3,11 +3,12 @@ import { FormsModule, FormControl, FormGroup, Validators, ReactiveFormsModule } 
 import { RouterLink, Router } from '@angular/router';
 import { Supabase } from '../../../../supabase';
 import { ChooseAvatar } from './choose-avatar/choose-avatar';
+import { Toast } from '../../../toast/toast';
 
 @Component({
   selector: 'app-sign-up',
   standalone: true,
-  imports: [FormsModule, RouterLink, ChooseAvatar, ReactiveFormsModule],
+  imports: [FormsModule, RouterLink, ChooseAvatar, ReactiveFormsModule, Toast],
   templateUrl: './sign-up.html',
   styleUrl: './sign-up.scss',
 })
@@ -17,6 +18,11 @@ export class SignUp {
 
 
   step = signal<'form' | 'avatar'>('form');
+  accountCreated = signal(false);
+  emailTaken = signal(false);
+  signUpFailed = signal(false);
+
+
 
   signUpForm = new FormGroup({
     name: new FormControl('', [Validators.required]),
@@ -25,9 +31,14 @@ export class SignUp {
     privacyPolicy: new FormControl(false, [Validators.requiredTrue]),
   });
 
-  goToAvatar() {
-    if (this.signUpForm.valid) this.step.set('avatar');
+  async goToAvatar() {
+    if (this.signUpForm.invalid) return;
+    const email = this.signUpForm.getRawValue().email ?? '';
+    const taken = await this.dbService.emailExists(email);
+    this.emailTaken.set(taken);
+    if (!taken) this.step.set('avatar');
   }
+
 
   goBackToForm() {
     this.step.set('form');
@@ -36,7 +47,7 @@ export class SignUp {
   async createAccount(avatar: string) {
     const { name, email, password, privacyPolicy } = this.signUpForm.getRawValue();
     const authUser = await this.dbService.signUp(email ?? '', password ?? '');
-    if (!authUser) return;
+    if (!authUser) return this.showSignUpError();
     const newUser = await this.dbService.addUser({
       id: authUser.id,
       name: name ?? '',
@@ -50,8 +61,16 @@ export class SignUp {
 
   async finishSignUp() {
     await this.dbService.signOut();
-    this.router.navigate(['/']);
+    this.accountCreated.set(true);
+    setTimeout(() => this.router.navigate(['/']), 1300);
   }
+
+  showSignUpError() {
+    this.signUpFailed.set(true);
+    this.step.set('form');
+  }
+
+
 
 
 }

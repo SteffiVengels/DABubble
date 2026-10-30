@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { Supabase } from '../../../../supabase';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
@@ -11,6 +11,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 })
 export class LogIn {
   dbService = inject(Supabase);
+  router = inject(Router);
 
   logInForm = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
@@ -25,6 +26,6 @@ export class LogIn {
     const user = await this.dbService.signIn(email ?? '', password ?? '');
     console.log('Login-Ergebnis:', user);
     this.loginError.set(!user);
-    if (user) this.logInForm.reset();
+    if (user) this.router.navigate(['/messenger']);
   }
 }

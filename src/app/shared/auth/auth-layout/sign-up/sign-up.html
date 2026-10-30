@@ -35,6 +35,11 @@
             Diese E-Mail-Adresse ist leider ungültig.
         </p>
         }
+        @if (emailTaken()) {
+        <p class="error" role="alert">
+            Diese E-Mail-Adresse wird bereits verwendet.
+        </p>
+        }
     </div>
 
 
@@ -72,7 +77,11 @@
         }
     </div>
 
-
+    @if (signUpFailed()) {
+    <p class="error" role="alert">
+        Die Registrierung ist fehlgeschlagen. Bitte versuche es später erneut.
+    </p>
+    }
     <button class="next-btn" type="submit" [disabled]="!signUpForm.valid">Weiter</button>
 
 </form>
@@ -80,4 +89,8 @@
 <app-choose-avatar [name]="signUpForm.value.name ?? ''" (goBack)="goBackToForm()"
     (avatarChosen)="createAccount($event)" />
 
+}
+
+@if (accountCreated()) {
+<app-toast text="Konto erfolgreich erstellt!" />
 }

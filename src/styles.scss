@@ -135,3 +135,9 @@ router-outlet {
         font-size: 1.778rem;
     }
 }
+
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation-duration: 200ms;
+    animation-timing-function: ease-out;
+}

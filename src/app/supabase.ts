@@ -92,6 +92,16 @@ export class Supabase {
     return !error;
   }
 
+  async emailExists(email: string) {
+    const { data } = await this.supabase
+      .from('users')
+      .select('id')
+      .eq('email', email)
+      .maybeSingle();
+    return !!data;
+  }
+
+
   async updatePassword(password: string) {
     const { error } = await this.supabase.auth.updateUser({ password });
     if (error) console.error('Error updating password:', error);
