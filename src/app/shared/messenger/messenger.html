@@ -1,1 +1,21 @@
-<p>messenger works!</p>
+<header>
+    <div class="logo">
+        <a routerLink="/">
+            <img src="favicon.png" alt="">
+            <img class="logo_name" src="/img/Logo_name.png" alt="Zur Startseite">
+        </a>
+    </div>
+    <div class="search">
+        <input type="text" placeholder="Devspace durchsuchen">
+        <img src="/img/icons/search.png" alt="Suche">
+    </div>
+    <div class="profile">
+        <p class="profile_name">Frederik Beck</p>
+        <div class="profile_img">
+            <img src="/img/men4.png" alt="Profilbild">
+            <div class="status online"></div>
+        </div>
+        <img class="profile_icon" src="/img/icons/keyboard_arrow_down.png" alt="Dropdown">
+    </div>
+</header>
+<router-outlet></router-outlet>

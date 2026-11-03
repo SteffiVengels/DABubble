@@ -7,6 +7,7 @@
     --purple3: #535AF1;
     --text-grey: #686868;
     --error: #ED1E79;
+    --online-green: #92C83E;
 }
 
 @font-face {
@@ -38,6 +39,8 @@ body {
     min-height: 100dvh;
     font-family: 'Nunito';
     font-size: 18px;
+    display: flex;
+    justify-content: center;
 }
 
 a {
@@ -140,4 +143,11 @@ router-outlet {
 ::view-transition-new(root) {
     animation-duration: 200ms;
     animation-timing-function: ease-out;
+}
+
+app-root {
+    display: flex;
+    justify-content: center;
+    max-width: 1920px;
+    width: 100%;
 }
