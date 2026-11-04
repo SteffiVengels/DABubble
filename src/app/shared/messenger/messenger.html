@@ -18,4 +18,21 @@
         <img class="profile_icon" src="/img/icons/keyboard_arrow_down.png" alt="Dropdown">
     </div>
 </header>
-<router-outlet></router-outlet>
+<section class="messenger">
+    @if (isOpen) {
+    <nav id="workspace-nav">
+        <app-workspace-menu></app-workspace-menu>
+    </nav>
+    }
+    <main><app-main-chat></app-main-chat></main>
+    <aside>
+        <app-secondary-chat></app-secondary-chat>
+    </aside>
+</section>
+<button type="button" class="workspace-menu-toggle" aria-controls="workspace-nav" [attr.aria-expanded]="isOpen"
+    (click)="isOpen = !isOpen">
+    <span>{{ isOpen ? 'Workspace-Menü schließen' : 'Workspace-Menü öffnen' }}</span>
+    <img class="icon" [src]="isOpen ? '/img/icons/Show-navigation.png' : '/img/icons/Hide-navigation.png'" alt="">
+    <img class="icon-hover"
+        [src]="isOpen ? '/img/icons/Show-navigation-hover.png' : '/img/icons/Hide-navigation-hover.png'" alt="">
+</button>
