@@ -9,6 +9,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    margin-bottom: 25px;
 }
 
 .workspace-menu__logo {
@@ -39,7 +40,7 @@
 
     &:hover {
         background-image: url('/img/icons/edit-square-hover.png');
-    }   
+    }
 
     &:active {
         background-image: url('/img/icons/edit-square-click.png');
@@ -62,7 +63,7 @@
 
     &:hover {
         background-image: url('/img/icons/add-hover.png');
-    }   
+    }
 
     &:active {
         background-image: url('/img/icons/add-click.png');
@@ -82,3 +83,37 @@
     }
 }
 
+.channel span {
+    display: flex;
+    background-image: url('/img/icons/tag.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 20px;
+    width: 20px;
+
+
+}
+
+.channel:hover span {
+    background-image: url('/img/icons/tag-hover.png');
+}
+
+.arrow {
+    display: flex;
+    background-image: url('/img/icons/arrow_drop_down.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 20px;
+    width: 20px;
+
+}
+
+.channel-icon {
+    display: flex;
+    background-image: url('/img/icons/channels-default.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 20px;
+    width: 20px;
+
+}
