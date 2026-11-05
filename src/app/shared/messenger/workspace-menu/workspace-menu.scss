@@ -5,3 +5,80 @@
     width: 100%;
 }
 
+.workspace-menu {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.workspace-menu__logo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-weight: 700;
+    font-size: 1.3rem;
+
+    >img {
+        width: 60px;
+        height: 60px;
+    }
+}
+
+.workspace-menu__button {
+    background-image: url('/img/icons/edit-square-default.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 40px;
+    width: 40px;
+    padding: 0;
+    background-color: transparent;
+    border-radius: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+        background-image: url('/img/icons/edit-square-hover.png');
+    }   
+
+    &:active {
+        background-image: url('/img/icons/edit-square-click.png');
+    }
+}
+
+.add-channel-button {
+    background-image: url('/img/icons/add-default.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 40px;
+    width: 40px;
+    padding: 0;
+
+    background-color: transparent;
+    border-radius: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+        background-image: url('/img/icons/add-hover.png');
+    }   
+
+    &:active {
+        background-image: url('/img/icons/add-click.png');
+    }
+}
+
+.summary {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+
+    >div {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+}
+
