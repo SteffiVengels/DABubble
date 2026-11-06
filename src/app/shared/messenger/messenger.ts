@@ -12,7 +12,9 @@ import { RouterLink } from '@angular/router';
   styleUrl: './messenger.scss',
 })
 export class Messenger {
+  /** isOpen = ob das Menü offen ist, Start: true */
   isOpen = true;
+  /** supabase = Supabase Service */
   supabase = inject(Supabase);
 
 }

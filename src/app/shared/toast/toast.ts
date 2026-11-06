@@ -7,7 +7,9 @@ import { Component, input } from '@angular/core';
   styleUrl: './toast.scss',
 })
 export class Toast {
+  /** text = Eingabe von Eltern-Komponente: angezeigter Text, Start: leer */
   text = input('');
+  /** icon = Eingabe von Eltern-Komponente: Bildpfad vom Icon, Start: leer */
   icon = input('');
 
 }

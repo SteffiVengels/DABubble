@@ -1,6 +1,5 @@
 import { Component, inject } from '@angular/core';
 import { Supabase } from '../../../supabase';
-
 @Component({
   selector: 'app-workspace-menu',
   imports: [],
@@ -8,5 +7,6 @@ import { Supabase } from '../../../supabase';
   styleUrl: './workspace-menu.scss',
 })
 export class WorkspaceMenu {
+  /** supabase = Supabase Service */
   supabase = inject(Supabase);
 }
