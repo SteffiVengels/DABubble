@@ -8,11 +8,11 @@
             <label for="email">E-Mail-Adresse</label>
             <span class="icon" aria-hidden="true"><img src="/img/icons/mail.png" alt=""></span>
             <input type="email" id="email" name="email" formControlName="email" autocomplete="email"
-                placeholder="beispielname@email.com" aria-describedby="auth-hint email-error" aria-invalid="false" />
+                placeholder="beispielname@email.com" aria-describedby="authHint emailError" aria-invalid="false" />
 
         </div>
         @if (logInForm.get('email')?.invalid && logInForm.get('email')?.touched) {
-        <p id="email-error" class="error" role="alert">
+        <p id="emailError" class="error" role="alert">
             Diese E-Mail-Adresse ist leider ungültig.
         </p>
         }
@@ -25,12 +25,12 @@
             <label for="password">Passwort</label>
             <span class="icon" aria-hidden="true"><img src="/img/icons/lock.png" alt=""></span>
             <input type="password" id="password" name="password" formControlName="password"
-                autocomplete="current-password" placeholder="Passwort" aria-describedby="password-error"
+                autocomplete="current-password" placeholder="Passwort" aria-describedby="passwordError"
                 aria-invalid="false" />
 
         </div>
         @if ((logInForm.get('password')?.invalid && logInForm.get('password')?.touched) || loginError()) {
-        <p id="password-error" class="error" role="alert">
+        <p id="passwordError" class="error" role="alert">
             Falsches Passwort oder E-Mail.. Bitte noch einmal versuchen.
         </p>
         }
@@ -49,12 +49,12 @@
     </div>
 
     <button type="button" class="google-btn">
-        <span class="icon-google" aria-hidden="true"><img src="/img/icons/Google.png" alt=""></span>
+        <span class="icon-google" aria-hidden="true"><img src="/img/icons/google.png" alt=""></span>
         Anmelden mit Google
     </button>
 
     <div class="actions">
         <button type="submit" [disabled]="!logInForm.valid">Anmelden</button>
-        <button type="button" class="secondary" routerLink="/messenger">Gäste-Login</button>
+        <button type="button" class="secondary" (click)="guestLogin()">Gäste-Login</button>
     </div>
 </form>

@@ -33,12 +33,12 @@ h2 {
     height: 40px;
     width: 40px;
     border: none;
-    background-image: url(/img/icons/go-back.png);
+    background-image: url(/img/icons/go_back.png);
 }
 
 .go-back:hover {
     border: none;
-    background-image: url(/img/icons/go-back-hover.png);
+    background-image: url(/img/icons/go_back_hover.png);
 }
 
 .logo {
@@ -57,7 +57,7 @@ h2 {
             height: 70px;
         }
 
-        >.logo_name {
+        >.logo-name {
             height: 24px;
         }
     }

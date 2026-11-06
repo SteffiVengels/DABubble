@@ -3,6 +3,9 @@
     border-radius: 30px;
     padding: 32px 30px;
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: hidden;
 }
 
 .workspace-menu {
@@ -12,7 +15,9 @@
     margin-bottom: 25px;
 }
 
-.workspace-menu__logo {
+
+
+.workspace-menu-logo {
     display: flex;
     align-items: center;
     gap: 15px;
@@ -25,8 +30,8 @@
     }
 }
 
-.workspace-menu__button {
-    background-image: url('/img/icons/edit-square-default.png');
+.workspace-menu-button {
+    background-image: url('/img/icons/edit_square_default.png');
     background-repeat: no-repeat;
     background-size: contain;
     height: 40px;
@@ -39,16 +44,16 @@
     justify-content: center;
 
     &:hover {
-        background-image: url('/img/icons/edit-square-hover.png');
+        background-image: url('/img/icons/edit_square_hover.png');
     }
 
     &:active {
-        background-image: url('/img/icons/edit-square-click.png');
+        background-image: url('/img/icons/edit_square_click.png');
     }
 }
 
 .add-channel-button {
-    background-image: url('/img/icons/add-default.png');
+    background-image: url('/img/icons/add_default.png');
     background-repeat: no-repeat;
     background-size: contain;
     height: 40px;
@@ -62,11 +67,11 @@
     justify-content: center;
 
     &:hover {
-        background-image: url('/img/icons/add-hover.png');
+        background-image: url('/img/icons/add_hover.png');
     }
 
     &:active {
-        background-image: url('/img/icons/add-click.png');
+        background-image: url('/img/icons/add_click.png');
     }
 }
 
@@ -83,31 +88,31 @@
         align-items: center;
         gap: 15px;
 
-            &:hover {
-        color: var(--purple3);
-    }
+        &:hover {
+            color: var(--purple3);
+        }
 
-    &:hover .channel-icon {
-        background-image: url('/img/icons/channels-hover.png');
-    }
+        &:hover .channel-icon {
+            background-image: url('/img/icons/channels_hover.png');
+        }
 
-    &:hover .account-icon {
-        background-image: url('/img/icons/account_circle_hover.png');
-    }
+        &:hover .account-icon {
+            background-image: url('/img/icons/account_circle_hover.png');
+        }
 
-    &:hover .arrow {
-        background-image: url('/img/icons/arrow_drop_down-hover.png');
-    }
+        &:hover .arrow {
+            background-image: url('/img/icons/arrow_drop_down_hover.png');
+        }
 
 
 
-    &:active {
-        color: black;
+        &:active {
+            color: black;
+        }
     }
 }
-}
 
-.workspace-menu__details:not([open]) .arrow {
+.workspace-menu-details:not([open]) .arrow {
     transform: rotate(-90deg);
 }
 
@@ -150,7 +155,7 @@
 }
 
 .channel:hover span {
-    background-image: url('/img/icons/tag-hover.png');
+    background-image: url('/img/icons/tag_hover.png');
 }
 
 .arrow {
@@ -165,7 +170,7 @@
 
 .channel-icon {
     display: flex;
-    background-image: url('/img/icons/channels-default.png');
+    background-image: url('/img/icons/channels_default.png');
     background-repeat: no-repeat;
     background-size: contain;
     height: 20px;
@@ -194,6 +199,7 @@
     font-size: 1.125rem;
     margin-left: 13px;
     margin-bottom: 25px;
+
     >span {
         background-image: url('/img/icons/add_circle.png');
         background-repeat: no-repeat;
@@ -204,34 +210,35 @@
 
     &:hover {
         color: var(--purple3);
-    
-    >span {
-        background-image: url('/img/icons/add_circle_hover.png');
+
+        >span {
+            background-image: url('/img/icons/add_circle_hover.png');
+        }
     }
-}
 
     &:active {
         color: black;
+
         >span {
-        background-image: url('/img/icons/add_circle_click.png');
-    }
+            background-image: url('/img/icons/add_circle_click.png');
+        }
     }
 
 }
 
-.profile_img {
-        position: relative;
+.profile-img {
+    position: relative;
+    height: 50px;
+    width: 50px;
+
+
+    >img {
         height: 50px;
         width: 50px;
+        border-radius: 42px;
 
-
-        >img {
-            height: 50px;
-            width: 50px;
-            border-radius: 42px;
-
-        }
     }
+}
 
 .status {
     position: absolute;
@@ -260,7 +267,7 @@
     padding: 4px 20px;
     margin-left: 13px;
     margin-bottom: 25px;
-    border-radius:30px;
+    border-radius: 30px;
 
     &:hover {
         background-color: var(--bg-color);
@@ -270,4 +277,32 @@
         color: var(--purple3);
         font-weight: 700;
     }
+
+    >p {
+        text-align: left;
+    }
+}
+
+.scroll-area {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding-right: 14px;
+}
+
+.scroll-area::-webkit-scrollbar {
+    width: 8px;                              // ohne diese Regel wird die Farbe ignoriert
+}
+
+.scroll-area::-webkit-scrollbar-track {
+    background: transparent;                 // Schiene (Hintergrund)
+}
+
+.scroll-area::-webkit-scrollbar-thumb {
+    background-color: var(--bg-color);   // der Balken, den man zieht
+    border-radius: 4px;
+}
+
+.scroll-area::-webkit-scrollbar-thumb:hover {
+    background-color: var(--purple2);        // optional: Farbe beim Hover
 }

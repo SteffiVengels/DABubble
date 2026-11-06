@@ -28,4 +28,13 @@ export class LogIn {
     this.loginError.set(!user);
     if (user) this.router.navigate(['/messenger']);
   }
+  
+  async guestLogin() {
+    const user = await this.dbService.signInAsGuest();
+    this.loginError.set(!user);
+    if (user) this.router.navigate(['/messenger']);
+  }
 }
+
+
+

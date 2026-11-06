@@ -129,12 +129,12 @@ input:focus {
     height: 40px;
     width: 40px;
     border: none;
-    background-image: url(/img/icons/go-back.png);
+    background-image: url(/img/icons/go_back.png);
 }
 
 .go-back:hover {
     border: none;
-    background-image: url(/img/icons/go-back-hover.png);
+    background-image: url(/img/icons/go_back_hover.png);
 }
 
 .privacy-label {
@@ -187,17 +187,17 @@ input:focus {
 
   // hover (unchecked)
   input:not(:checked) + label:hover::before {
-    background-image: url("/img/icons/check-hover.png");
+    background-image: url("/img/icons/check_hover.png");
   }
 
   // checked
   input:checked + label::before {
-    background-image: url("/img/icons/check-checked.png");
+    background-image: url("/img/icons/check_checked.png");
   }
 
   // checked + hover
   input:checked + label:hover::before {
-    background-image: url("/img/icons/check-checked-hover.png");
+    background-image: url("/img/icons/check_checked_hover.png");
   }
 }
 

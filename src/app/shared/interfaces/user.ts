@@ -5,5 +5,4 @@ export interface User {
     email: string;
     privacy_policy: boolean;
     avatar: string;
-    online: boolean;
 }

@@ -2,7 +2,7 @@
     <div class="logo">
         <a routerLink="/">
             <img src="favicon.png" alt="">
-            <img class="logo_name" src="/img/Logo_name.png" alt="Zur Startseite">
+            <img class="logo-name" src="/img/logo_name.png" alt="Zur Startseite">
         </a>
     </div>
     <div class="search">
@@ -10,17 +10,20 @@
         <img src="/img/icons/search.png" alt="Suche">
     </div>
     <div class="profile">
-        <p class="profile_name">Frederik Beck</p>
-        <div class="profile_img">
-            <img src="/img/men4.png" alt="Profilbild">
-            <div class="status online"></div>
+        @if (supabase.currentUser(); as user) {
+        <p class="profile-name">{{ user.name }}</p>
+        <div class="profile-img">
+            <img [src]="user.avatar" alt="Profilbild">
+            <div class="status" [class.online]="supabase.isOnline(user.id)"></div>
         </div>
-        <img class="profile_icon" src="/img/icons/keyboard_arrow_down.png" alt="Dropdown">
+        }
+        <img class="profile-icon" src="/img/icons/keyboard_arrow_down.png" alt="Dropdown">
     </div>
+
 </header>
 <section class="messenger">
     @if (isOpen) {
-    <nav id="workspace-nav">
+    <nav id="workspaceNav">
         <app-workspace-menu></app-workspace-menu>
     </nav>
     }
@@ -29,10 +32,10 @@
         <app-secondary-chat></app-secondary-chat>
     </aside>
 </section>
-<button type="button" class="workspace-menu-toggle" aria-controls="workspace-nav" [attr.aria-expanded]="isOpen"
+<button type="button" class="workspace-menu-toggle" aria-controls="workspaceNav" [attr.aria-expanded]="isOpen"
     (click)="isOpen = !isOpen">
     <span>{{ isOpen ? 'Workspace-Menü schließen' : 'Workspace-Menü öffnen' }}</span>
-    <img class="icon" [src]="isOpen ? '/img/icons/Show-navigation.png' : '/img/icons/Hide-navigation.png'" alt="">
+    <img class="icon" [src]="isOpen ? '/img/icons/show_navigation.png' : '/img/icons/hide_navigation.png'" alt="">
     <img class="icon-hover"
-        [src]="isOpen ? '/img/icons/Show-navigation-hover.png' : '/img/icons/Hide-navigation-hover.png'" alt="">
+        [src]="isOpen ? '/img/icons/show_navigation_hover.png' : '/img/icons/hide_navigation_hover.png'" alt="">
 </button>

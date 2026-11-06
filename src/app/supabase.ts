@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, computed } from '@angular/core';
 import { createClient, RealtimeChannel } from '@supabase/supabase-js';
 import { User } from './shared/interfaces/user';
 
@@ -12,10 +12,45 @@ export class Supabase {
 
   users = signal<User[]>([]);
   channel: RealtimeChannel | undefined;
+  currentUserId = signal<string | null>(null);
+  currentUser = computed(() =>
+    this.users().find(user => user.id === this.currentUserId()) ?? null
+  );
+
+  onlineUserIds = signal<Set<string>>(new Set());
+  presenceChannel: RealtimeChannel | undefined;
+  private presenceUserId: string | null = null;
+
+  guestEmail = 'gast@dabubble.de';
+
+  directMessageUsers = computed(() =>
+    this.users().filter(user =>
+      user.email !== this.guestEmail ||
+      user.id === this.currentUserId() ||
+      this.onlineUserIds().has(user.id)
+    )
+  );
 
   constructor() {
     this.getUsers();
     this.subscribeToUsers();
+    this.supabase.auth.onAuthStateChange((_event, session) => {
+      const userId = session?.user.id ?? null;
+      this.currentUserId.set(userId);
+      this.updatePresence(userId);
+    });
+  }
+
+  /** Startet Presence neu, sobald sich der eingeloggte User ändert (Login, Logout, Account-Wechsel). */
+  private async updatePresence(userId: string | null) {
+    if (userId === this.presenceUserId) return;
+    this.presenceUserId = userId;
+    await this.leavePresence();
+    if (userId) this.joinPresence(userId);
+  }
+
+  async signInAsGuest() {
+    return this.signIn(this.guestEmail,'dabubblegast');
   }
 
   async getUsers() {
@@ -106,6 +141,35 @@ export class Supabase {
     const { error } = await this.supabase.auth.updateUser({ password });
     if (error) console.error('Error updating password:', error);
     return !error;
+  }
+
+  private joinPresence(userId: string) {
+    this.presenceChannel = this.supabase.channel('online-users', {
+      config: { presence: { key: userId } },
+    });
+
+    this.presenceChannel
+      .on('presence', { event: 'sync' }, () => {
+        const state = this.presenceChannel!.presenceState();
+        this.onlineUserIds.set(new Set(Object.keys(state)));
+      })
+      .subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+          await this.presenceChannel!.track({ online_at: new Date().toISOString() });
+        }
+      });
+  }
+
+  private async leavePresence() {
+    if (!this.presenceChannel) return;
+    const channel = this.presenceChannel;
+    this.presenceChannel = undefined;
+    this.onlineUserIds.set(new Set());
+    await this.supabase.removeChannel(channel);
+  }
+
+  isOnline(userId: string) {
+    return this.onlineUserIds().has(userId);
   }
 
 

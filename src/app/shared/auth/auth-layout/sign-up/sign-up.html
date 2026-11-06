@@ -11,10 +11,10 @@
             <label for="name">Name</label>
             <span class="icon" aria-hidden="true"><img src="/img/icons/person_filled.png" alt=""></span>
             <input type="text" id="name" name="name" formControlName="name" autocomplete="name"
-                placeholder="Name und Nachname" required aria-describedby="auth-hint name-error" aria-invalid="false" />
+                placeholder="Name und Nachname" required aria-describedby="authHint nameError" aria-invalid="false" />
         </div>
         @if (signUpForm.get('name')?.invalid && signUpForm.get('name')?.touched) {
-        <p id="name-error" class="error" role="alert">
+        <p id="nameError" class="error" role="alert">
             Bitte schreiben Sie einen Namen.
         </p>
         }
@@ -27,11 +27,11 @@
             <label for="email">E-Mail-Adresse</label>
             <span class="icon" aria-hidden="true"><img src="/img/icons/mail.png" alt=""></span>
             <input type="email" id="email" name="email" formControlName="email" autocomplete="email"
-                placeholder="beispielname@email.com" required aria-describedby="auth-hint email-error"
+                placeholder="beispielname@email.com" required aria-describedby="authHint emailError"
                 aria-invalid="false" />
         </div>
         @if (signUpForm.get('email')?.invalid && signUpForm.get('email')?.touched) {
-        <p id="email-error" class="error" role="alert">
+        <p id="emailError" class="error" role="alert">
             Diese E-Mail-Adresse ist leider ungültig.
         </p>
         }
@@ -49,11 +49,11 @@
             <label for="password">Passwort</label>
             <span class="icon" aria-hidden="true"><img src="/img/icons/lock.png" alt=""></span>
             <input type="password" id="password" name="password" formControlName="password"
-                autocomplete="current-password" placeholder="Passwort" required aria-describedby="password-error"
+                autocomplete="current-password" placeholder="Passwort" required aria-describedby="passwordError"
                 aria-invalid="false" />
         </div>
         @if (signUpForm.get('password')?.invalid && signUpForm.get('password')?.touched) {
-        <p id="password-error" class="error" role="alert">
+        <p id="passwordError" class="error" role="alert">
             Bitte geben Sie ein Passwort ein.
         </p>
         }
@@ -64,14 +64,14 @@
     <div class="width-100">
         <div class="checkbox-field">
             <input type="checkbox" id="privacy" name="privacy" formControlName="privacyPolicy"
-                aria-describedby="privacy-error" aria-invalid="false" />
+                aria-describedby="privacyError" aria-invalid="false" />
             <label class="privacy-label" for="privacy">
                 Ich stimme der
                 <a class="forgot" href="#" routerLink="/datenschutz">Datenschutzerklärung</a> zu.
             </label>
         </div>
         @if (signUpForm.get('privacyPolicy')?.invalid && signUpForm.get('privacyPolicy')?.touched) {
-        <p id="privacy-error" class="error" role="alert">
+        <p id="privacyError" class="error" role="alert">
             Bitte stimmen Sie der Datenschutzerklärung zu.
         </p>
         }

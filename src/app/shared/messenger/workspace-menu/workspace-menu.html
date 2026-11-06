@@ -1,45 +1,48 @@
 <div class="workspace-menu">
-    <div class="workspace-menu__logo">
-        <img src="/img/Workspace-logo.png" alt="workspace-logo">
+    <div class="workspace-menu-logo">
+        <img src="/img/workspace_logo.png" alt="workspace-logo">
         <p>Devspace</p>
     </div>
-    <button class="workspace-menu__button">
+    <button class="workspace-menu-button">
     </button>
 </div>
-<details class="workspace-menu__details" open>
-    <summary class="summary">
-        
-        <div>
-            <span class="arrow"></span>
-            <span class="channel-icon"></span>
-            <p>Channels</p>
-        </div>
-        <button class="add-channel-button">
-        </button>
-    </summary>
-    <button class="channel">
-        <span></span>
-        <p>Entwicklerteam</p>
-    </button>
-    <button class="add-channel">
-        <span></span>
-        <p>Channel hinzufügen</p>
-    </button>
-</details>
-<details class="workspace-menu__details" open>
-    <summary class="summary">
-        <div>
-            <span class="arrow"></span>
-            <span class="account-icon"></span>
-            <p>Direktnachricht</p>
-        </div>
-    </summary>
-    <button class="direct-message">
-        <div class="profile_img">
-            <img src="/img/men4.png" alt="Profilbild">
-            <div class="status online"></div>
-        </div>
-        <p>Frederick Beck <span>(Du)</span></p>
-    </button>
+<div class="scroll-area">
+    <details class="workspace-menu-details" open>
+        <summary class="summary">
 
-</details>
+            <div>
+                <span class="arrow"></span>
+                <span class="channel-icon"></span>
+                <p>Channels</p>
+            </div>
+            <button class="add-channel-button">
+            </button>
+        </summary>
+        <button class="channel">
+            <span></span>
+            <p>Entwicklerteam</p>
+        </button>
+        <button class="add-channel">
+            <span></span>
+            <p>Channel hinzufügen</p>
+        </button>
+    </details>
+    <details class="workspace-menu-details" open>
+        <summary class="summary">
+            <div>
+                <span class="arrow"></span>
+                <span class="account-icon"></span>
+                <p>Direktnachricht</p>
+            </div>
+        </summary>
+        @for (user of supabase.directMessageUsers(); track user.id) {
+        <button class="direct-message">
+            <div class="profile-img">
+                <img [src]="user.avatar" alt="Profilbild">
+                <div class="status" [class.online]="supabase.isOnline(user.id)"></div>
+            </div>
+            <p>{{ user.name }} @if (user.id === supabase.currentUserId()) { <span>(Du)</span> }</p>
+        </button>
+        }
+    </details>
+</div>
