@@ -75,13 +75,66 @@
     align-items: center;
     flex-direction: row;
     justify-content: space-between;
+    margin-bottom: 25px;
+    font-weight: 700;
 
     >div {
         display: flex;
         align-items: center;
         gap: 15px;
+
+            &:hover {
+        color: var(--purple3);
+    }
+
+    &:hover .channel-icon {
+        background-image: url('/img/icons/channels-hover.png');
+    }
+
+    &:hover .account-icon {
+        background-image: url('/img/icons/account_circle_hover.png');
+    }
+
+    &:hover .arrow {
+        background-image: url('/img/icons/arrow_drop_down-hover.png');
+    }
+
+
+
+    &:active {
+        color: black;
     }
 }
+}
+
+.workspace-menu__details:not([open]) .arrow {
+    transform: rotate(-90deg);
+}
+
+.channel {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 20px;
+    margin-left: 13px;
+    margin-bottom: 25px;
+    font-size: 1.125rem;
+    font-weight: 400;
+    background-color: transparent;
+    color: black;
+
+
+    &:hover {
+        background-color: var(--bg-color);
+        border-radius: 20px;
+    }
+
+    &:active {
+        color: var(--purple3);
+        font-weight: 700;
+    }
+}
+
 
 .channel span {
     display: flex;
@@ -90,6 +143,8 @@
     background-size: contain;
     height: 20px;
     width: 20px;
+
+
 
 
 }
@@ -105,7 +160,7 @@
     background-size: contain;
     height: 20px;
     width: 20px;
-
+    transition: transform 0.2s ease-in-out;
 }
 
 .channel-icon {
@@ -116,4 +171,103 @@
     height: 20px;
     width: 20px;
 
+}
+
+.account-icon {
+    display: flex;
+    background-image: url('/img/icons/account_circle.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 20px;
+    width: 20px;
+
+}
+
+.add-channel {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: transparent;
+    padding: 4px 20px;
+    color: black;
+    font-weight: 400;
+    font-size: 1.125rem;
+    margin-left: 13px;
+    margin-bottom: 25px;
+    >span {
+        background-image: url('/img/icons/add_circle.png');
+        background-repeat: no-repeat;
+        background-size: contain;
+        height: 20px;
+        width: 20px;
+    }
+
+    &:hover {
+        color: var(--purple3);
+    
+    >span {
+        background-image: url('/img/icons/add_circle_hover.png');
+    }
+}
+
+    &:active {
+        color: black;
+        >span {
+        background-image: url('/img/icons/add_circle_click.png');
+    }
+    }
+
+}
+
+.profile_img {
+        position: relative;
+        height: 50px;
+        width: 50px;
+
+
+        >img {
+            height: 50px;
+            width: 50px;
+            border-radius: 42px;
+
+        }
+    }
+
+.status {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    height: 14px;
+    width: 14px;
+    border-radius: 50%;
+    background-color: var(--text-grey);
+    border: 2px solid white;
+}
+
+.online {
+    background-color: var(--online-green);
+}
+
+.direct-message {
+    background-color: transparent;
+    color: black;
+    font-weight: 400;
+    font-size: 1.125rem;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 4px 20px;
+    margin-left: 13px;
+    margin-bottom: 25px;
+    border-radius:30px;
+
+    &:hover {
+        background-color: var(--bg-color);
+    }
+
+    &:active {
+        color: var(--purple3);
+        font-weight: 700;
+    }
 }
