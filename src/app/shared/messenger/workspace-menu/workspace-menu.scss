@@ -291,18 +291,122 @@
 }
 
 .scroll-area::-webkit-scrollbar {
-    width: 8px;                              // ohne diese Regel wird die Farbe ignoriert
+    width: 8px; // ohne diese Regel wird die Farbe ignoriert
 }
 
 .scroll-area::-webkit-scrollbar-track {
-    background: transparent;                 // Schiene (Hintergrund)
+    background: transparent; // Schiene (Hintergrund)
 }
 
 .scroll-area::-webkit-scrollbar-thumb {
-    background-color: var(--bg-color);   // der Balken, den man zieht
+    background-color: var(--bg-color); // der Balken, den man zieht
     border-radius: 4px;
 }
 
 .scroll-area::-webkit-scrollbar-thumb:hover {
-    background-color: var(--purple2);        // optional: Farbe beim Hover
+    background-color: var(--purple2); // optional: Farbe beim Hover
+}
+
+.create-channel {
+    margin: auto;
+    background-color: white;
+    border: none;
+    padding: 0;
+    border-radius: 30px;
+    box-shadow: 0px 6px 10px 0 rgba(0, 0, 0, 0.2);
+
+    &::backdrop {
+        background-color: rgba(0, 0, 0, 0.3);
+    }
+}
+
+.create-channel-inner {
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 880px;
+}
+
+.create-channel-top {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+
+    >p {
+        font-weight: 700;
+        font-size: 1.5rem;
+    }
+}
+
+.close {
+    display: flex;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    background-color: transparent;
+    background-image: url('/img/icons/close.png');
+
+    &:hover {
+        background-image: url('/img/icons/close_hover.png');
+    }
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    input {
+        border: none;
+        outline: none;
+        width: 100%;
+        font-family: 'Nunito';
+        font-size: 1.125rem;
+
+    }
+}
+
+.input-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+
+    >label {
+        font-size: 1.125rem;
+        font-weight: 700;
+
+        >span {
+            color: var(--text-grey);
+            font-weight: 400;
+        }
+    }
+}
+
+.input {
+    background-color: transparent;
+    width: 100%;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    border-radius: 40px;
+    padding: 18px 20px;
+    border: 1px solid var(--light-purple);
+    font-family: 'Nunito';
+    font-size: 1.125rem;
+}
+
+.input:hover {
+    border: 1px solid var(--purple2);
+}
+
+.input:focus-within {
+    border: 1px solid var(--purple3);
+}
+
+.submit-div {
+    display: flex;
+    justify-content: flex-end;
 }
