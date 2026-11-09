@@ -231,6 +231,35 @@ export class Supabase {
   }
 
   /**
+   * Ändert den Namen eines Users in der users-Tabelle.
+   * Updates a user's name in the users table.
+   *
+   * @param userId - ID des Users. / ID of the user.
+   * @param name - Der neue Name. / The new name.
+   * @returns `true`, wenn der Name geändert wurde, sonst `false`. / `true` if the name was changed, otherwise `false`.
+   */
+  async updateUserName(userId: string, name: string) {
+    /** error = warte auf: in Tabelle users den Namen ändern, wo (id ist gleich User ID) */
+    const { error } = await this.supabase
+      .from('users')
+      .update({ name })
+      .eq('id', userId);
+    /** wenn (error ist vorhanden) dann */
+    if (error) {
+      /** zeige Fehler in Konsole */
+      console.error('Error updating user name:', error);
+      /** gib false zurück */
+      return false;
+    }
+    /** users = users, aber beim User mit (id ist gleich User ID) den Namen ersetzen */
+    this.users.update(users =>
+      users.map(user => user.id === userId ? { ...user, name } : user)
+    );
+    /** gib true zurück */
+    return true;
+  }
+
+  /**
    * Schickt eine Mail mit einem Link zum Zurücksetzen des Passworts.
    * Sends an email with a link to reset the password.
    *

@@ -9,4 +9,10 @@ import { Supabase } from '../../../supabase';
 export class WorkspaceMenu {
   /** supabase = Supabase Service */
   supabase = inject(Supabase);
+
+  closeOnBackdrop(event: MouseEvent, dialog: HTMLDialogElement) {
+    // Ein Klick auf den ::backdrop hat den Dialog selbst als Target
+    if (event.target === dialog) dialog.close();
+  }
+
 }

@@ -46,3 +46,10 @@
         }
     </details>
 </div>
+
+<dialog #createChannel (click)="closeOnBackdrop($event, createChannel)">
+    <div>
+        <p>Channel erstellen</p>
+        <span class="close"></span>
+    </div>
+</dialog>

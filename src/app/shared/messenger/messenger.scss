@@ -45,13 +45,13 @@ header {
     justify-content: flex-end;
     flex: 1;
 
-    >.profile-name {
+    .profile-name {
         font-weight: 700;
         font-size: 2rem;
         white-space: nowrap;
     }
 
-    >.profile-img {
+    .profile-img {
         position: relative;
         height: 70px;
         width: 70px;
@@ -67,9 +67,12 @@ header {
 
 
 
-    >.profile-icon {
+    .profile-icon {
         height: 30px;
         width: 30px;
+        background-image: url("/img/icons/keyboard_arrow_down.png");
+
+
     }
 }
 
@@ -118,7 +121,7 @@ header {
 }
 
 .messenger {
-    display:flex;
+    display: flex;
     flex-direction: row;
     flex: 1;
     min-height: 0;
@@ -170,5 +173,225 @@ header {
         .icon-hover {
             display: inline;
         }
+    }
+}
+
+.profile-dropdown {
+    background-color: transparent;
+    padding: 0;
+    color: black;
+    display: flex;
+    align-items: center;
+
+    &:hover {
+        color: var(--purple2);
+
+        .profile-icon {
+            background-image: url("/img/icons/keyboard_arrow_down_hover.png");
+        }
+    }
+
+    &:active {
+        color: black;
+
+        .profile-icon {
+            background-image: url("/img/icons/keyboard_arrow_down.png");
+        }
+    }
+}
+
+.overlay-profil {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    background-color: white;
+    padding: 30px;
+    border-radius: 30px 0px 30px 30px;
+    box-shadow: 0px 6px 10px 0 rgba(0, 0, 0, 0.2);
+
+    >button {
+        background-color: transparent;
+        color: black;
+        font-family: 'Nunito';
+        font-weight: 600;
+        font-size: 1.5rem;
+        padding: 10px 0;
+        width: 224px;
+
+        &:hover {
+            background-color: var(--bg-color);
+            color: var(--purple3);
+        }
+    }
+
+}
+
+.details {
+    gap: 40px;
+    padding: 45px;
+    align-items: center;
+    width: 420px;
+
+    >div {
+        width: 100%;
+    }
+}
+
+.profile-menu {
+    inset: 118px 24px auto auto; // top right bottom left – left/bottom auf auto, sonst gewinnt left: 0 vom Browser
+    padding: 0; // wichtig, sonst zählen Klicks aufs Padding als Backdrop
+    border: none;
+    margin: 0;
+    border-radius: 30px 0 30px 30px;
+
+    &::backdrop {
+        background-color: rgba(0, 0, 0, 0.3);
+    }
+
+    .status {
+        position: relative;
+    }
+}
+
+.profile-details-top {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+
+    >p {
+        font-weight: 700;
+        font-size: 1.5rem;
+    }
+}
+
+.close-button {
+    background-image: url('/img/icons/close.png');
+    background-color: transparent;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+
+    &:hover {
+        background-image: url('/img/icons/close_hover.png');
+    }
+}
+
+.profile-details-img {
+    width: 200px;
+    aspect-ratio: 1/1;
+    border-radius: 500px;
+}
+
+.profile-details-name {
+    font-weight: 700;
+    font-size: 2rem;
+}
+
+.profile-details-middle {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    >button {
+        font-family: 'Nunito';
+        background-color: transparent;
+        padding: 0;
+        color: var(--purple3);
+        font-size: 1rem;
+        font-weight: 600;
+
+        &:hover {
+            font-weight: 700;
+        }
+    }
+}
+
+.status-text {
+    font-size: 1.25rem;
+    color: var(--text-grey);
+}
+
+.gap-15 {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.online-text {
+    color: var(--online-green);
+}
+
+.profile-details-mail {
+    width: 100%;
+
+    >div {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+
+    }
+
+    p {
+        font-size: 1.25rem;
+        font-weight: 700;
+    }
+
+    a {
+        font-weight: 500;
+        font-size: 1.125rem;
+        color: #1381FF;
+        padding: 0;
+        border: none;
+        font-family: 'Nunito';
+        margin-left: 50px;
+    }
+}
+
+.space-between {
+    justify-content: space-between;
+}
+
+.profile-edit-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 32px;
+}
+
+.profile-edit-input {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    >div {
+        display: flex;
+        font-weight: 700;
+        font-size: 1.25rem;
+        gap: 20px;
+    }
+
+    >input {
+        border: 1px solid var(--light-purple);
+        border-radius: 30px;
+        padding: 15px 20px;
+        width: 100%;
+        font-family: 'Nunito';
+        font-size: 1.125rem;
+        color: black;
+
+        &:hover {
+            border-color: var(--purple2);
+        }
+
+        &:focus {
+            outline: none;
+            border-color: var(--purple1);
+        }
+    }
+
+    img {
+        width: 30px;
+        height: 30px;
     }
 }
