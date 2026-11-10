@@ -18,10 +18,21 @@ export class Messenger {
   supabase = inject(Supabase);
   /** router = Angular Router für die Weiterleitung */
   router = inject(Router);
-  /** isEditing = ob das Profil gerade bearbeitet wird */
-  isEditing = signal(false);
+  /** changeName = ob das Profil gerade bearbeitet wird */
+  changeName = signal(false);
+  /** changeAvatar = ob der Avatar geändert werden soll */
+  changeAvatar = signal(false);
   /** editName = aktueller Inhalt des Namensfelds */
   editName = signal('');
+  /** editAvatar = aktueller Avatar */
+  editAvatar = signal('');
+    /** avatars = Liste der Bildpfade zur Auswahl */
+  avatars = [
+    '/img/women2.png', '/img/men1.png', '/img/men2.png',
+    '/img/men3.png', '/img/women1.png', '/img/men4.png',
+  ];
+  /** selectedAvatar = Signal mit gewähltem Bild, Start: Platzhalter-Bild */
+  selectedAvatar = signal('/img/person.png');
 
   /**
    * Meldet den User ab, schließt das Menü und leitet zum Login weiter.
@@ -54,10 +65,21 @@ export class Messenger {
     const success = await this.supabase.updateUserName(user.id, name);
     /** wenn (success) dann beende Bearbeiten-Modus */
     if (success)  {
-      this.isEditing.set(false);
+      this.changeName.set(false);
       dialog.close()
     }
       
+  }
+
+  async saveAvatar(dialog: HTMLDialogElement) {
+    const avatar = this.editAvatar();
+    const user = this.supabase.currentUser();
+    if (!user || !avatar) return;
+    const success = await this.supabase.updateUserAvatar(user.id, avatar);
+    if (success) {
+      this.changeAvatar.set(false);
+      dialog.close()
+    }
   }
 
 }

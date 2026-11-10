@@ -33,21 +33,54 @@
     </dialog>
 
     <dialog #profileDetails class="profile-menu" (click)="closeOnBackdrop($event, profileDetails)"
-        (close)="isEditing.set(false)">
+        (close)="changeName.set(false); changeAvatar.set(false)">
         <div class="overlay-profil details">
             <div class="profile-details-top">
                 <p>
-                    {{ isEditing() ? 'Dein Profil bearbeiten' : 'Profil'}}
+                    {{ (changeName() || changeAvatar()) ? 'Dein Profil bearbeiten' : 'Profil' }}
                 </p>
                 <button class="close-button" (click)="profileDetails.close()"></button>
             </div>
             @if (supabase.currentUser(); as user) {
-            <img class="profile-details-img" [src]="user.avatar" alt="Profilbild">
-            @if (!isEditing()) {
+            <div class="profile-details-img-wrapper">
+                <img class="profile-details-img" [src]="changeAvatar() ? editAvatar() : user.avatar" alt="Profilbild">
+                @if (!changeAvatar()  && !changeName()) {
+                <button class="edit" (click)="editAvatar.set(user.avatar); changeAvatar.set(true)"></button>
+                }
+            </div>
+            @if (changeName()) {
+            <div class="profile-edit-input">
+                <div>
+                    <img src="/img/icons/account_circle.png" alt="">
+                    <p>Vollständiger Name</p>
+                </div>
+                <input type="text" [value]="editName()" (input)="editName.set(nameInput.value)" #nameInput
+                    placeholder="Dein Name hier">
+            </div>
+            <div class="profile-edit-buttons">
+                <button class="secondary" (click)="profileDetails.close()">Abbrechen</button>
+                <button (click)="saveName(profileDetails)"
+                    [disabled]="!editName().trim() || editName().trim() === user.name">Speichern</button>
+            </div>
+            } @else if (changeAvatar()) {
+            <div>
+                <p>Aus der Liste wählen</p>
+                <ul class="avatar-list">
+                    @for (avatar of avatars; track avatar) {
+                    <li (click)="editAvatar.set(avatar)"><img [src]="avatar" alt="Avatar"></li>
+                    }
+                </ul>
+            </div>
+            <div class="profile-edit-buttons">
+                <button class="secondary" (click)="profileDetails.close()">Abbrechen</button>
+                <button (click)="saveAvatar(profileDetails)"
+                    [disabled]="editAvatar() === user.avatar">Speichern</button>
+            </div>
+            }@else {
             <div class="gap-15">
                 <div class="profile-details-middle space-between">
                     <p class="profile-details-name">{{ user.name }}</p>
-                    <button (click)="editName.set(user.name); isEditing.set(true)">Bearbeiten</button>
+                    <button (click)="editName.set(user.name); changeName.set(true)">Bearbeiten</button>
                 </div>
                 <div class="profile-details-middle">
                     <div class="status" [class.online]="supabase.isOnline(user.id)"></div>
@@ -62,20 +95,6 @@
                     <p>E-Mail-Adresse</p>
                 </div>
                 <a href="mailto:{{ user.email }}">{{ user.email }}</a>
-            </div>
-            } @else {
-            <div class="profile-edit-input">
-                <div>
-                    <img src="/img/icons/account_circle.png" alt="">
-                    <p>Vollständiger Name</p>
-                </div>
-                <input type="text" [value]="editName()" (input)="editName.set(nameInput.value)" #nameInput
-                    Placeholder="Dein Name hier">
-            </div>
-            <div class="profile-edit-buttons">
-                <button class="secondary" (click)="profileDetails.close()">Abbrechen</button>
-                <button (click)="saveName(profileDetails)"
-                    [disabled]="!editName().trim() || editName().trim() === user.name">Speichern</button>
             </div>
             }
             }

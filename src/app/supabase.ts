@@ -259,6 +259,21 @@ export class Supabase {
     return true;
   }
 
+  async updateUserAvatar(userId: string, avatar: string) {
+    const { error } = await this.supabase
+      .from('users')
+      .update({ avatar })
+      .eq('id', userId);
+    if (error) {
+      console.error('Error updating user avatar:', error);
+      return false;
+    }
+    this.users.update(users =>
+      users.map(user => user.id === userId ? {...user, avatar } : user)
+    );
+    return true;
+  }
+
   /**
    * Schickt eine Mail mit einem Link zum Zurücksetzen des Passworts.
    * Sends an email with a link to reset the password.
