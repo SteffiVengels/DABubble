@@ -1,9 +1,10 @@
-<dialog #dialog class="create-channel" (click)="closeOnBackdrop($event)">
+<dialog #dialog class="create-channel" (click)="closeOnBackdrop($event)" (close)="reset()">
     <div class="create-channel-inner">
         <div class="create-channel-top">
-            <p>Channel erstellen</p>
+            <p>{{ step() === 'form' ? 'Channel erstellen' : 'Leute hinzufügen' }}</p>
             <button class="close" (click)="close()"></button>
         </div>
+        @if(step() === 'form') {
         <p>Channels dienen deinem Team zur Kommunikation. Am besten sollten sie themenbezogen sein #marketing zum
             Beispiel.</p>
         <form [formGroup]="createChannelForm">
@@ -21,8 +22,28 @@
                 </div>
             </div>
             <div class="submit-div">
-                <button type="submit" [disabled]="!createChannelForm.valid">Erstellen</button>
+                <button type="submit" [disabled]="!createChannelForm.valid" (click)="goToMembers()">Erstellen</button>
             </div>
         </form>
+        } @else {
+        <label>
+            <input type="radio" name="memberMode" [checked]="memberMode() === 'all'" (change)="memberMode.set('all')">
+            Alle Mitglieder von <span class="highlight">Devspace</span> hinzufügen
+        </label>
+        <label>
+            <input type="radio" name="memberMode" [checked]="memberMode() === 'specific'"
+                (change)="memberMode.set('specific')">
+            Bestimmte Leute hinzufügen
+        </label>
+        @if (memberMode() === 'specific') {
+        <div class="input-fields">
+            <label class="d_none" for="name">Name</label>
+            <div class="input">
+                <input type="text" id="name" formControlName="name" placeholder="Name eingeben">
+            </div>
+        </div>
+        }
+        <div class="submit-div"><button>Erstellen</button></div>
+        }
     </div>
 </dialog>

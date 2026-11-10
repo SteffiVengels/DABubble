@@ -1,4 +1,4 @@
-import { Component, ElementRef, viewChild } from '@angular/core';
+import { Component, ElementRef, viewChild, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 @Component({
@@ -16,6 +16,12 @@ export class CreateChannelDialog {
     name: new FormControl('', [Validators.required, Validators.minLength(3)]),
     description: new FormControl(''),
   });
+
+  step = signal<'form' | 'members'>('form');
+
+  memberMode = signal<'all' | 'specific'>('all');
+  /** templateChannelId = ID vom Channel, dessen Mitglieder übernommen werden */
+  templateChannelId = signal<string | null>(null);
 
   /**
    * Öffnet den Dialog.
@@ -40,5 +46,15 @@ export class CreateChannelDialog {
   closeOnBackdrop(event: MouseEvent) {
     // Ein Klick auf den ::backdrop hat den Dialog selbst als Target
     if (event.target === this.dialog().nativeElement) this.close();
+  }
+
+  goToMembers() {
+    if (this.createChannelForm.invalid) return;
+    this.step.set('members');
+  }
+
+  reset() {
+    this.step.set('form');
+    this.createChannelForm.reset();
   }
 }
