@@ -1,0 +1,66 @@
+<dialog #dialog class="profile-menu" (click)="closeOnBackdrop($event)" (close)="resetEditMode()">
+    <div class="overlay-profil details">
+        <div class="profile-details-top">
+            <p>
+                {{ (changeName() || changeAvatar()) ? 'Dein Profil bearbeiten' : 'Profil' }}
+            </p>
+            <button class="close-button" (click)="close()"></button>
+        </div>
+        @if (supabase.currentUser(); as user) {
+        <div class="profile-details-img-wrapper">
+            <img class="profile-details-img" [src]="changeAvatar() ? editAvatar() : user.avatar" alt="Profilbild">
+            @if (!changeAvatar() && !changeName()) {
+            <button class="edit" (click)="editAvatar.set(user.avatar); changeAvatar.set(true)"></button>
+            }
+        </div>
+        @if (changeName()) {
+        <div class="profile-edit-input">
+            <div>
+                <img src="/img/icons/account_circle.png" alt="">
+                <p>Vollständiger Name</p>
+            </div>
+            <input type="text" [value]="editName()" (input)="editName.set(nameInput.value)" #nameInput
+                placeholder="Dein Name hier">
+        </div>
+        <div class="profile-edit-buttons">
+            <button class="secondary" (click)="close()">Abbrechen</button>
+            <button (click)="saveName()"
+                [disabled]="!editName().trim() || editName().trim() === user.name">Speichern</button>
+        </div>
+        } @else if (changeAvatar()) {
+        <div>
+            <p>Aus der Liste wählen</p>
+            <ul class="avatar-list">
+                @for (avatar of avatars; track avatar) {
+                <li (click)="editAvatar.set(avatar)"><img [src]="avatar" alt="Avatar"></li>
+                }
+            </ul>
+        </div>
+        <div class="profile-edit-buttons">
+            <button class="secondary" (click)="close()">Abbrechen</button>
+            <button (click)="saveAvatar()" [disabled]="editAvatar() === user.avatar">Speichern</button>
+        </div>
+        } @else {
+        <div class="gap-15">
+            <div class="profile-details-middle space-between">
+                <p class="profile-details-name">{{ user.name }}</p>
+                <button (click)="editName.set(user.name); changeName.set(true)">Bearbeiten</button>
+            </div>
+            <div class="profile-details-middle">
+                <div class="status" [class.online]="supabase.isOnline(user.id)"></div>
+                <p class="status-text" [class.online-text]="supabase.isOnline(user.id)">
+                    {{ supabase.isOnline(user.id) ? 'Aktiv' : 'Abwesend' }}
+                </p>
+            </div>
+        </div>
+        <div class="profile-details-mail gap-15">
+            <div>
+                <img src="/img/icons/mail2.png" alt="">
+                <p>E-Mail-Adresse</p>
+            </div>
+            <a href="mailto:{{ user.email }}">{{ user.email }}</a>
+        </div>
+        }
+        }
+    </div>
+</dialog>

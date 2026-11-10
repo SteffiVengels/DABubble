@@ -15,14 +15,14 @@
                 <span class="channel-icon"></span>
                 <p>Channels</p>
             </div>
-            <button class="add-channel-button" (click)="createChannel.showModal()">
+            <button class="add-channel-button" (click)="createChannel.open()">
             </button>
         </summary>
         <button class="channel">
             <span></span>
             <p>Entwicklerteam</p>
         </button>
-        <button class="add-channel" (click)="createChannel.showModal()">
+        <button class="add-channel" (click)="createChannel.open()">
             <span></span>
             <p>Channel hinzufügen</p>
         </button>
@@ -47,32 +47,4 @@
     </details>
 </div>
 
-<dialog #createChannel class="create-channel" (click)="closeOnBackdrop($event, createChannel)">
-    <div class="create-channel-inner">
-        <div class="create-channel-top">
-            <p>Channel erstellen</p>
-            <button class="close" (click)="createChannel.close()"></button>
-        </div>
-        <p>Channels dienen deinem Team zur Kommunikation. Am besten sollten sie themenbezogen sein #marketing zum
-            Beispiel.</p>
-        <form [formGroup]="createChannelForm">
-            <div class="input-fields">
-                <label for="name">Channel-Name</label>
-                <div class="input">
-                    <span class="icon" aria-hidden="true">#</span>
-                    <input type="text" id="name" formControlName="name" placeholder="z.B. Kooperationsprojekte">
-                </div>
-            </div>
-            <div class="input-fields">
-                <label for="description">Beschreibung <span>(optional)</span></label>
-                <div class="input">
-                    <input type="text" id="description" formControlName="description" placeholder="Dein Text hier">
-                </div>
-
-            </div>
-            <div class="submit-div">
-                <button type="submit" [disabled]="!createChannelForm.valid">Erstellen</button>
-            </div>
-        </form>
-    </div>
-</dialog>
+<app-create-channel-dialog #createChannel />
