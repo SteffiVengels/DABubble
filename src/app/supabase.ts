@@ -385,5 +385,47 @@ export class Supabase {
     return this.onlineUserIds().has(userId);
   }
 
+  /**
+   * Legt einen neuen Channel an und trägt die Mitglieder in channel_members ein.
+   * Creates a new channel and adds the members to channel_members.
+   *
+   * @param name - Name vom Channel (ohne #). / Name of the channel (without #).
+   * @param description - Beschreibung oder `null`. / Description or `null`.
+   * @param memberIds - IDs aller Mitglieder (inkl. Ersteller). / IDs of all members (including the creator).
+   * @returns Die ID vom neuen Channel oder `null` bei einem Fehler. / The ID of the new channel, or `null` on error.
+   */
+  async createChannel(name: string, description: string | null, memberIds: string[]) {
+    /** data, error = warte auf: in Tabelle channels (Name, Beschreibung, Ersteller) einfügen und die neue ID zurückgeben */
+    const { data, error } = await this.supabase
+      .from('channels')
+      .insert({ name, description, created_by: this.currentUserId() })
+      .select('id')
+      .single();
+    /** wenn (error ist vorhanden) dann */
+    if (error) {
+      /** zeige Fehler in Konsole */
+      console.error('Error creating channel:', error);
+      /** gib null zurück */
+      return null;
+    }
+    /** rows = für jede Mitglieds-ID eine Zeile { channel_id, user_id } */
+    const rows = memberIds.map(userId => ({ channel_id: data.id, user_id: userId }));
+    /** membersError = warte auf: in Tabelle channel_members alle rows einfügen */
+    const { error: membersError } = await this.supabase
+      .from('channel_members')
+      .insert(rows);
+    /** wenn (membersError ist vorhanden) dann */
+    if (membersError) {
+      /** zeige Fehler in Konsole */
+      console.error('Error adding channel members:', membersError);
+      /** warte auf: Channel wieder löschen, damit kein Channel ohne Mitglieder übrig bleibt */
+      await this.supabase.from('channels').delete().eq('id', data.id);
+      /** gib null zurück */
+      return null;
+    }
+    /** gib ID vom neuen Channel zurück */
+    return data.id as number;
+  }
+
 
 }

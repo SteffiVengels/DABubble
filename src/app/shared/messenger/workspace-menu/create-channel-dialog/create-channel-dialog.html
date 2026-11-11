@@ -36,14 +36,50 @@
             Bestimmte Leute hinzufügen
         </label>
         @if (memberMode() === 'specific') {
-        <div class="input-fields">
-            <label class="d_none" for="name">Name</label>
-            <div class="input">
-                <input type="text" id="name" formControlName="name" placeholder="Name eingeben">
+        <div class="search-field">
+            <div class="input-fields">
+                <label class="d_none" for="member-search">Name</label>
+                <div class="input">
+                    @for (user of selectedUsers(); track user.id) {
+                    <span class="chip">
+                        <img [src]="user.avatar" alt="">
+                        {{ user.name }}
+                        <button type="button" class="chip-remove" (click)="removeUser(user)"
+                            [attr.aria-label]="user.name + ' entfernen'"></button>
+                    </span>
+                    }
+                    <input type="text" id="member-search" placeholder="Name eingeben" autocomplete="off"
+                        [value]="memberSearch()" (input)="onMemberSearch($event)">
+                </div>
             </div>
+            @if (memberSearch()) {
+            <div class="search-result">
+                <div class="search-result-scroll-area">
+                    @for (user of filteredUsers(); track user.id) {
+                    <button type="button" class="direct-message" (click)="addUser(user)">
+                        <div class="profile-img">
+                            <img [src]="user.avatar" alt="Profilbild">
+                            <div class="status" [class.online]="supabase.isOnline(user.id)"></div>
+                        </div>
+                        <p>{{ user.name }}</p>
+                    </button>
+                    } @empty {
+                    <p class="no-result">Keine Person gefunden</p>
+                    }
+                </div>
+            </div>
+            }
         </div>
         }
-        <div class="submit-div"><button>Erstellen</button></div>
+        @if (saveError()) {
+        <p class="save-error">Channel konnte nicht erstellt werden. Bitte versuche es erneut.</p>
+        }
+        <div class="submit-div">
+            <button type="button" (click)="createChannel()"
+                [disabled]="isSaving() || (memberMode() === 'specific' && !selectedUsers().length)">
+                Erstellen
+            </button>
+        </div>
         }
     </div>
 </dialog>
