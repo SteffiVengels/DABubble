@@ -27,8 +27,6 @@ export class CreateChannelDialog {
 
   /** memberMode = Auswahl im Radio ('all' = alle von Devspace, 'specific' = bestimmte Leute), Start: 'all' */
   memberMode = signal<'all' | 'specific'>('all');
-  /** templateChannelId = ID vom Channel, dessen Mitglieder übernommen werden, Start: null (wird später durch Channel-Suche ersetzt) */
-  templateChannelId = signal<string | null>(null);
   /** supabase = Supabase Service */
   supabase = inject(Supabase);
 

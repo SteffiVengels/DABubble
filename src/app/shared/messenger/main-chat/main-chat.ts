@@ -8,4 +8,13 @@ import { Component } from '@angular/core';
 })
 export class MainChat {
 
+  /**
+   * Schließt den Dialog bei Klick auf den Hintergrund.
+   * Closes the dialog when the backdrop is clicked.
+   */
+  closeOnBackdrop(event: MouseEvent, dialog: HTMLDialogElement) {
+    // Ein Klick auf den ::backdrop hat den Dialog selbst als Target
+    if (event.target === dialog) dialog.close();
+  }
+
 }

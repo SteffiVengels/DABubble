@@ -18,10 +18,12 @@
             <button class="add-channel-button" (click)="createChannel.open()">
             </button>
         </summary>
+        @for (channel of supabase.myChannels(); track channel.id) {
         <button class="channel">
             <span></span>
-            <p>Entwicklerteam</p>
+            <p>{{ channel.name }}</p>
         </button>
+        }
         <button class="add-channel" (click)="createChannel.open()">
             <span></span>
             <p>Channel hinzufügen</p>

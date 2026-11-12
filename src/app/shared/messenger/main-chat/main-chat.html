@@ -1,1 +1,31 @@
-<p>main-chat works!</p>
+<div class="main-chat-head">
+    <button class="edit-channel" (click)="editChannel.showModal()">
+        <span class="hashtag-icon"></span> Entwicklerteam
+        <span class="arrow-down"></span>
+    </button>
+    <div class="members">
+        <button class="show-members">
+            <div class="show-members-wrapper">
+                <img class="avatar" src="/img/men1.png" alt="">
+                <img class="avatar" src="/img/men2.png" alt="">
+                <img class="avatar" src="/img/men3.png" alt="">
+            </div>
+            <p>3</p>
+
+        </button>
+        <button class="add-members">
+        </button>
+    </div>
+
+</div>
+
+<dialog #editChannel (click)="closeOnBackdrop($event, editChannel)">
+    <div>
+        <div>
+            <p><span class="hashtag-icon"></span>Entwicklerteam</p>
+            <button (click)="editChannel.close()"></button>
+        </div>
+    </div>
+    <button>Channel verlassen</button>
+
+</dialog>

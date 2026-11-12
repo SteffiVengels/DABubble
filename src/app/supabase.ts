@@ -1,6 +1,7 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { createClient, RealtimeChannel } from '@supabase/supabase-js';
 import { User } from './shared/interfaces/user';
+import { Channel } from './shared/interfaces/channel';
 import { environment } from '../environments/environment';
 
 /** Service ist in der ganzen App verfügbar (eine Instanz für alle) */
@@ -44,6 +45,19 @@ export class Supabase {
     )
   );
 
+  /** channels = Signal mit Liste aller Channels (inkl. memberIds), Start: leere Liste */
+  channels = signal<Channel[]>([]);
+  /** channelsRealtime = Realtime-Channel für channels- und channel_members-Tabelle, Start: undefined */
+  channelsRealtime: RealtimeChannel | undefined;
+
+  /** myChannels = filtere channels */
+  myChannels = computed(() =>
+    this.channels().filter(channel =>
+      /** behalte Channel, wenn (memberIds enthält currentUserId) */
+      channel.memberIds.includes(this.currentUserId() ?? '')
+    )
+  );
+
   /**
    * Abonniert Änderungen an der users-Tabelle und reagiert auf Login, Logout und Account-Wechsel.
    * Subscribes to changes in the users table and reacts to login, logout and account switches.
@@ -51,6 +65,8 @@ export class Supabase {
   constructor() {
     /** führe Funktion subscribeToUsers() aus */
     this.subscribeToUsers();
+    /** führe Funktion subscribeToChannels() aus */
+    this.subscribeToChannels();
     /** wenn (Login-Status ändert sich) dann führe aus: */
     this.supabase.auth.onAuthStateChange((_event, session) => {
       /** User ID = ID aus Session, sonst null */
@@ -73,10 +89,20 @@ export class Supabase {
     if (userId === this.presenceUserId) return;
     /** aktuelle User ID ist User ID */
     this.presenceUserId = userId;
-    /** wenn (User ID ist nicht null) führe funktion getUsers() aus */
-    if (userId) this.getUsers();
-    /** sonst users = leere Liste */
-    else this.users.set([]);
+    /** wenn (User ID ist nicht null) dann */
+    if (userId) {
+      /** führe Funktion getUsers() aus */
+      this.getUsers();
+      /** führe Funktion getChannels() aus */
+      this.getChannels();
+    }
+    /** sonst */
+    else {
+      /** users = leere Liste */
+      this.users.set([]);
+      /** channels = leere Liste */
+      this.channels.set([]);
+    }
     /** warte auf Funktion leavePresence() */
     await this.leavePresence();
     /** wenn (User ID ist nicht null) führe Funktion joinPresence(User ID) aus */
@@ -140,8 +166,56 @@ export class Supabase {
   }
 
   /**
-   * Beendet das Realtime-Abo der users-Tabelle.
-   * Removes the Realtime subscription for the users table.
+   * Lädt alle Channels samt Mitgliedern und speichert sie im Signal `channels`.
+   * Loads all channels including their members and stores them in the `channels` signal.
+   */
+  async getChannels() {
+    /** data, error = warte auf: aus Tabelle channels alles auswählen, dazu aus channel_members die user_id, sortiert nach Name */
+    const { data, error } = await this.supabase
+      .from('channels')
+      .select('*, channel_members(user_id)')
+      .order('name');
+    /** wenn (data ist leer) dann */
+    if (!data) {
+      /** zeige Fehler in Konsole */
+      console.error('Error fetching channels:', error);
+      /** beende Funktion */
+      return;
+    }
+    /** channels = data umgewandelt: für jeden Channel */
+    this.channels.set(data.map(({ channel_members, ...channel }) => ({
+      /** alle Felder vom Channel übernehmen (ohne channel_members) */
+      ...channel,
+      /** memberIds = aus channel_members nur die user_id nehmen */
+      memberIds: (channel_members as { user_id: string }[]).map(member => member.user_id),
+    })));
+  }
+
+  /**
+   * Hört per Realtime auf Änderungen an channels und channel_members und lädt die Channels dann neu.
+   * Listens for changes to channels and channel_members via Realtime and reloads the channels when one occurs.
+   */
+  subscribeToChannels() {
+    /** channelsRealtime = neuer Realtime-Channel 'channels' */
+    this.channelsRealtime = this.supabase
+      .channel('channels')
+      /** wenn (Änderung in Tabelle channels) dann führe Funktion getChannels() aus */
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'channels' }, () => this.getChannels())
+      /** wenn (Änderung in Tabelle channel_members) dann führe Funktion getChannels() aus */
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'channel_members' }, () => this.getChannels())
+      /** Channel starten, dann prüfe Status */
+      .subscribe((status, err) => {
+        /** wenn (Status ist Fehler oder Zeitüberschreitung) dann */
+        if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          /** zeige Fehler in Konsole */
+          console.error(status, err);
+        }
+      });
+  }
+
+  /**
+   * Beendet die Realtime-Abos der users- und channels-Tabellen.
+   * Removes the Realtime subscriptions for the users and channels tables.
    */
   ngOnDestroy() {
     /** wenn (channel ist vorhanden) dann */
@@ -149,6 +223,8 @@ export class Supabase {
       /** entferne channel */
       this.supabase.removeChannel(this.channel);
     }
+    /** wenn (channelsRealtime ist vorhanden) dann entferne channelsRealtime */
+    if (this.channelsRealtime) this.supabase.removeChannel(this.channelsRealtime);
   }
 
   /**
@@ -423,6 +499,8 @@ export class Supabase {
       /** gib null zurück */
       return null;
     }
+    /** warte auf: Funktion getChannels() (neuer Channel erscheint sofort, auch ohne Realtime) */
+    await this.getChannels();
     /** gib ID vom neuen Channel zurück */
     return data.id as number;
   }
