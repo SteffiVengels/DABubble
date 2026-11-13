@@ -138,6 +138,14 @@
         color: var(--purple3);
         font-weight: 700;
     }
+
+    // Aktuell geöffneter Channel (Klasse wird über chatState gesetzt)
+    &.active {
+        background-color: var(--bg-color);
+        border-radius: 20px;
+        color: var(--purple3);
+        font-weight: 700;
+    }
 }
 
 
@@ -154,7 +162,8 @@
 
 }
 
-.channel:hover span {
+.channel:hover span,
+.channel.active span {
     background-image: url('/img/icons/tag_hover.png');
 }
 
@@ -199,6 +208,10 @@
     font-size: 1.125rem;
     margin-left: 13px;
     margin-bottom: 25px;
+
+    >p {
+        text-align: start;
+    }
 
     >span {
         background-image: url('/img/icons/add_circle.png');
@@ -275,6 +288,13 @@
     }
 
     &:active {
+        color: var(--purple3);
+        font-weight: 700;
+    }
+
+    // Aktuell geöffnete Direktnachricht (Klasse wird über chatState gesetzt)
+    &.active {
+        background-color: var(--bg-color);
         color: var(--purple3);
         font-weight: 700;
     }

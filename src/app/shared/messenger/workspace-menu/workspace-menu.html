@@ -19,7 +19,8 @@
             </button>
         </summary>
         @for (channel of supabase.myChannels(); track channel.id) {
-        <button class="channel">
+        <button class="channel" (click)="chatState.openChannel(channel.id)"
+            [class.active]="chatState.activeChannel()?.id === channel.id">
             <span></span>
             <p>{{ channel.name }}</p>
         </button>
@@ -38,7 +39,8 @@
             </div>
         </summary>
         @for (user of supabase.directMessageUsers(); track user.id) {
-        <button class="direct-message">
+        <button class="direct-message" (click)="chatState.openDirectMessage(user.id)"
+            [class.active]="chatState.activeDirectMessageUser()?.id === user.id">
             <div class="profile-img">
                 <img [src]="user.avatar" alt="Profilbild">
                 <div class="status" [class.online]="supabase.isOnline(user.id)"></div>

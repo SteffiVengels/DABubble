@@ -102,7 +102,7 @@
     &:hover {
         background-color: var(--bg-color);
         color: var(--purple3);
-        
+
     }
 }
 
@@ -119,5 +119,97 @@
 }
 
 .avatar:not(:first-child) {
-  margin-left: -14px;    
+    margin-left: -14px;
+}
+
+.panel-anchor {
+    position: relative;
+}
+
+// Halbtransparenter Hintergrund hinter einem offenen Panel (Klick schließt es)
+.panel-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+// Basis für Show- und Add-Members-Panel
+.panel {
+    position: absolute;
+    // 8px unter dem Button
+    top: 48px;
+    // rechte Kante bündig mit dem Button
+    right: 0;
+    // über dem Backdrop
+    z-index: 11;
+    background-color: white;
+    // Ecke oben rechts ohne Rundung (Panel hängt rechts am Button)
+    border-radius: 30px 0 30px 30px;
+    box-shadow: 0px 6px 10px 0 rgba(0, 0, 0, 0.2);
+}
+
+// Edit Channel: linksbündig unter dem Button, Ecke oben links ohne Rundung
+.edit-channel-panel {
+    right: auto;
+    left: 0;
+    max-width: 880px;
+    border-radius: 0 30px 30px 30px;
+}
+
+// Mitglieder anzeigen – eigene Breite
+.show-members-panel {
+    max-width: 420px;
+}
+
+// Leute hinzufügen – eigene Breite
+.add-members-panel {
+    max-width: 520px;
+}
+
+.panel-inner {
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.panel-head {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.edit-channel-inner {
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.edit-channel-head {
+    display: flex;
+    justify-content: space-between;
+
+    >p {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        font-weight: 700;
+        font-size: 1.5rem;
+    }
+}
+
+.close-button {
+    display: flex;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    background-color: transparent;
+    background-image: url('/img/icons/close.png');
+
+    &:hover {
+        background-image: url('/img/icons/close_hover.png');
+    }
 }

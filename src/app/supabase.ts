@@ -117,7 +117,7 @@ export class Supabase {
    */
   async signInAsGuest() {
     /** gib zurück: Funktion signIn(Gast-E-Mail, Gast-Passwort) */
-    return this.signIn(this.guestEmail,'dabubblegast');
+    return this.signIn(this.guestEmail, 'dabubblegast');
   }
 
   /**
@@ -345,7 +345,7 @@ export class Supabase {
       return false;
     }
     this.users.update(users =>
-      users.map(user => user.id === userId ? {...user, avatar } : user)
+      users.map(user => user.id === userId ? { ...user, avatar } : user)
     );
     return true;
   }

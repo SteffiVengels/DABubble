@@ -1,31 +1,67 @@
+@if (chatState.activeChannel(); as channel) {
+<!-- Hintergrund hinter offenem Panel: Klick darauf schließt das Panel -->
+@if (openPanel()) {
+<div class="panel-backdrop" (click)="openPanel.set(null)"></div>
+}
 <div class="main-chat-head">
-    <button class="edit-channel" (click)="editChannel.showModal()">
-        <span class="hashtag-icon"></span> Entwicklerteam
-        <span class="arrow-down"></span>
-    </button>
-    <div class="members">
-        <button class="show-members">
-            <div class="show-members-wrapper">
-                <img class="avatar" src="/img/men1.png" alt="">
-                <img class="avatar" src="/img/men2.png" alt="">
-                <img class="avatar" src="/img/men3.png" alt="">
+    <!-- Wrapper = Bezugspunkt (position: relative) für das Panel darunter -->
+    <div class="panel-anchor">
+        <button class="edit-channel" (click)="openPanel.set('editChannel')">
+            <span class="hashtag-icon"></span> {{ channel.name }}
+            <span class="arrow-down"></span>
+        </button>
+        @if (openPanel() === 'editChannel') {
+        <div class="panel edit-channel-panel">
+            <div class="edit-channel-inner">
+                <div class="edit-channel-head">
+                    <p><span class="hashtag-icon"></span>{{ channel.name }}</p>
+                    <button class="close-button" (click)="openPanel.set(null)"></button>
+                </div>
+                <div>
+                    <button>Channel verlassen</button>
+                </div>
             </div>
-            <p>3</p>
-
-        </button>
-        <button class="add-members">
-        </button>
+        </div>
+        }
     </div>
+    <div class="members">
+        <!-- Wrapper = Bezugspunkt (position: relative) für das Panel darunter -->
+        <div class="panel-anchor">
+            <button class="show-members" (click)="openPanel.set('showMembers')">
+                <div class="show-members-wrapper">
+                    <img class="avatar" src="/img/men1.png" alt="">
+                    <img class="avatar" src="/img/men2.png" alt="">
+                    <img class="avatar" src="/img/men3.png" alt="">
+                </div>
+                <p>3</p>
+            </button>
+            @if (openPanel() === 'showMembers') {
+            <div class="panel show-members-panel">
+                <div class="panel-inner">
+                    <div class="panel-head">
+                        <p>Mitglieder</p>
+                        <button class="close-button" (click)="openPanel.set(null)"></button>
+                    </div>
+                </div>
+            </div>
+            }
+        </div>
 
-</div>
-
-<dialog #editChannel (click)="closeOnBackdrop($event, editChannel)">
-    <div>
-        <div>
-            <p><span class="hashtag-icon"></span>Entwicklerteam</p>
-            <button (click)="editChannel.close()"></button>
+        <div class="panel-anchor">
+            <button class="add-members" (click)="openPanel.set('addMembers')">
+            </button>
+            @if (openPanel() === 'addMembers') {
+            <div class="panel add-members-panel">
+                <div class="panel-inner">
+                    <div class="panel-head">
+                        <p>Leute hinzufügen</p>
+                        <button class="close-button" (click)="openPanel.set(null)"></button>
+                    </div>
+                </div>
+            </div>
+            }
         </div>
     </div>
-    <button>Channel verlassen</button>
+</div>
 
-</dialog>
+}

@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
+import { Supabase } from '../../../supabase';
+import { ChatState } from '../../../chat-state';
 
 @Component({
   selector: 'app-main-chat',
@@ -7,14 +9,12 @@ import { Component } from '@angular/core';
   styleUrl: './main-chat.scss',
 })
 export class MainChat {
+  /** Supabase-Service injizieren */
+  supabase = inject(Supabase);
+  /** chatState = ChatState Service (welcher Chat offen ist) */
+  chatState = inject(ChatState);
 
-  /**
-   * Schließt den Dialog bei Klick auf den Hintergrund.
-   * Closes the dialog when the backdrop is clicked.
-   */
-  closeOnBackdrop(event: MouseEvent, dialog: HTMLDialogElement) {
-    // Ein Klick auf den ::backdrop hat den Dialog selbst als Target
-    if (event.target === dialog) dialog.close();
-  }
+  /** openPanel = Signal, welches Panel gerade offen ist ('editChannel' / 'showMembers' / 'addMembers'), Start: null (keins) */
+  openPanel = signal<'editChannel' | 'showMembers' | 'addMembers' | null>(null);
 
 }
