@@ -1,3 +1,6 @@
+@use '../user-status';
+@use '../scrollbar';
+
 :host {
     background-color: white;
     border-radius: 30px;
@@ -239,36 +242,6 @@
 
 }
 
-.profile-img {
-    position: relative;
-    height: 50px;
-    width: 50px;
-
-
-    >img {
-        height: 50px;
-        width: 50px;
-        border-radius: 42px;
-
-    }
-}
-
-.status {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    z-index: 1;
-    height: 14px;
-    width: 14px;
-    border-radius: 50%;
-    background-color: var(--text-grey);
-    border: 2px solid white;
-}
-
-.online {
-    background-color: var(--online-green);
-}
-
 .direct-message {
     background-color: transparent;
     color: black;
@@ -309,21 +282,4 @@
     min-height: 0;
     overflow-y: auto;
     padding-right: 14px;
-}
-
-.scroll-area::-webkit-scrollbar {
-    width: 8px; // ohne diese Regel wird die Farbe ignoriert
-}
-
-.scroll-area::-webkit-scrollbar-track {
-    background: transparent; // Schiene (Hintergrund)
-}
-
-.scroll-area::-webkit-scrollbar-thumb {
-    background-color: var(--bg-color); // der Balken, den man zieht
-    border-radius: 4px;
-}
-
-.scroll-area::-webkit-scrollbar-thumb:hover {
-    background-color: var(--purple2); // optional: Farbe beim Hover
 }

@@ -8,5 +8,6 @@ import { RouterOutlet } from '@angular/router';
   styleUrl: './app.scss'
 })
 export class App {
+  /** title = Signal mit dem Namen der App, Start: 'DABubble' */
   protected readonly title = signal('DABubble');
 }

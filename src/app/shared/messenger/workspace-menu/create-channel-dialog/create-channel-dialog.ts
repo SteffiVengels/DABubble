@@ -175,7 +175,9 @@ export class CreateChannelDialog {
     this.isSaving.set(false);
     /** wenn (channelId ist null, also Fehler) dann zeige Fehlermeldung und beende Funktion */
     if (channelId === null) {
+      /** saveError = true (Fehlermeldung anzeigen) */
       this.saveError.set(true);
+      /** beende Funktion */
       return;
     }
     /** schließe Dialog (reset() wird dabei automatisch aufgerufen) */

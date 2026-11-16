@@ -31,8 +31,14 @@ export class Messenger {
     this.router.navigate(['/auth/login']);
   }
 
+  /**
+   * Schließt einen Dialog bei Klick auf den Hintergrund.
+   * Closes a dialog when its backdrop is clicked.
+   * @param event - Klick-Ereignis / click event
+   * @param dialog - Dialog, der geschlossen werden soll / dialog to close
+   */
   closeOnBackdrop(event: MouseEvent, dialog: HTMLDialogElement) {
-    // Ein Klick auf den ::backdrop hat den Dialog selbst als Target
+    /** wenn (Klick-Ziel ist der Dialog selbst, also der ::backdrop) dann schließe Dialog */
     if (event.target === dialog) dialog.close();
   }
 }

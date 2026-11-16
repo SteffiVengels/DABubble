@@ -1,4 +1,4 @@
-<dialog #dialog class="profile-menu" (click)="closeOnBackdrop($event)" (close)="resetEditMode()">
+<dialog #dialog class="profile-menu" [class.centered]="centered()" (click)="closeOnBackdrop($event)" (close)="resetEditMode()">
     <div class="overlay-profil details">
         <div class="profile-details-top">
             <p>
@@ -47,7 +47,7 @@
                 <button (click)="editName.set(user.name); changeName.set(true)">Bearbeiten</button>
             </div>
             <div class="profile-details-middle">
-                <div class="status" [class.online]="supabase.isOnline(user.id)"></div>
+                <div class="status status-big" [class.online]="supabase.isOnline(user.id)"></div>
                 <p class="status-text" [class.online-text]="supabase.isOnline(user.id)">
                     {{ supabase.isOnline(user.id) ? 'Aktiv' : 'Abwesend' }}
                 </p>

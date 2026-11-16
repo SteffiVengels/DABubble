@@ -1,21 +1,8 @@
+@use '../logo';
+
 .logo {
-    height: fit-content;
-
     >a {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        border: none;
-        gap: 16px;
         padding: 25px 50px 0 50px;
-
-        >img {
-            height: 70px;
-        }
-
-        >.logo-name {
-            height: 24px;
-        }
     }
 }
 

@@ -1,3 +1,5 @@
+@use '../go-back';
+
 form {
     max-width: 640px;
     max-height: 800px;
@@ -125,30 +127,12 @@ input:focus {
     position: absolute;
     left: 32px;
     top: 55px;
-    display: flex;
-    height: 40px;
-    width: 40px;
-    border: none;
-    background-image: url(/img/icons/go_back.png);
-}
-
-.go-back:hover {
-    border: none;
-    background-image: url(/img/icons/go_back_hover.png);
 }
 
 .privacy-label {
     display: flex;
     flex-direction: row;
     align-items: center;
-}
-
-.checkbox-field {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 8px;
 }
 
 .auth-headline {
@@ -160,6 +144,12 @@ input:focus {
 }
 
 .checkbox-field {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+
   input[type="checkbox"] {
     position: absolute;
     opacity: 0;          // versteckt, bleibt aber fokussierbar

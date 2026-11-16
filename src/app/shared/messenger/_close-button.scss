@@ -1,0 +1,15 @@
+// Runder X-Button zum Schließen von Dialogen und Panels
+// genutzt in: main-chat, profile-dialog, create-channel-dialog
+
+.close-button {
+    display: flex;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    background-color: transparent;
+    background-image: url('/img/icons/close.png');
+
+    &:hover {
+        background-image: url('/img/icons/close_hover.png');
+    }
+}

@@ -1,0 +1,123 @@
+// Inhalt der Profil-Ansicht (Bild, Name, Status, E-Mail)
+// genutzt in: profile-dialog, main-chat
+
+.details {
+    gap: 45px;
+    padding: 40px;
+    align-items: center;
+    width: 420px;
+
+    >div {
+        width: 100%;
+    }
+}
+
+.profile-details-top {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+
+    >p {
+        font-weight: 700;
+        font-size: 1.5rem;
+    }
+}
+
+.profile-details-img {
+    width: 200px;
+    aspect-ratio: 1/1;
+    border-radius: 500px;
+}
+
+.profile-details-name {
+    font-weight: 700;
+    font-size: 2rem;
+}
+
+.profile-details-middle {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    >button {
+        font-family: 'Nunito';
+        background-color: transparent;
+        padding: 0;
+        color: var(--purple3);
+        font-size: 1rem;
+        font-weight: 600;
+
+        &:hover {
+            font-weight: 700;
+        }
+    }
+}
+
+.status-text {
+    font-size: 1.25rem;
+    color: var(--text-grey);
+}
+
+.gap-15 {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.online-text {
+    color: var(--online-green);
+}
+
+.profile-details-mail {
+    width: 100%;
+
+    >div {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+
+    }
+
+    p {
+        font-size: 1.25rem;
+        font-weight: 700;
+    }
+
+    a {
+        font-weight: 500;
+        font-size: 1.125rem;
+        color: #1381FF;
+        padding: 0;
+        border: none;
+        font-family: 'Nunito';
+        margin-left: 50px;
+    }
+}
+
+.space-between {
+    justify-content: space-between;
+}
+
+.profile-details-img-wrapper {
+    width: fit-content !important;
+    position: relative;
+
+    >.edit {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        height: 24px;
+        width: 24px;
+        background-image: url('/img/icons/edit.png');
+        background-repeat: no-repeat;
+        background-position: center;
+        background-color: var(--bg-color);
+        border-radius: 20px;
+        padding: 20px;
+
+        &:hover {
+            background-image: url('/img/icons/edit_hover.png');
+        }
+    }
+}

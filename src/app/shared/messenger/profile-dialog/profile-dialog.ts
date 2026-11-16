@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, signal, viewChild } from '@angular/core';
+import { Component, ElementRef, inject, input, signal, viewChild } from '@angular/core';
 import { Supabase } from '../../../supabase';
 
 @Component({
@@ -12,13 +12,15 @@ export class ProfileDialog {
   supabase = inject(Supabase);
   /** dialog = Referenz auf das <dialog>-Element im Template */
   dialog = viewChild.required<ElementRef<HTMLDialogElement>>('dialog');
-  /** changeName = ob der Name gerade bearbeitet wird */
+  /** centered = Input von außen: Dialog mittig statt oben rechts anzeigen, Start: false */
+  centered = input(false);
+  /** changeName = Signal, ob der Name gerade bearbeitet wird, Start: false */
   changeName = signal(false);
-  /** changeAvatar = ob der Avatar gerade geändert wird */
+  /** changeAvatar = Signal, ob der Avatar gerade geändert wird, Start: false */
   changeAvatar = signal(false);
-  /** editName = aktueller Inhalt des Namensfelds */
+  /** editName = aktueller Inhalt des Namensfelds, Start: leer */
   editName = signal('');
-  /** editAvatar = aktuell ausgewählter Avatar */
+  /** editAvatar = aktuell ausgewählter Avatar, Start: leer */
   editAvatar = signal('');
   /** avatars = Liste der Bildpfade zur Auswahl */
   avatars = [
@@ -31,6 +33,7 @@ export class ProfileDialog {
    * Opens the profile dialog.
    */
   open() {
+    /** Dialog als Modal öffnen */
     this.dialog().nativeElement.showModal();
   }
 
@@ -39,6 +42,7 @@ export class ProfileDialog {
    * Closes the profile dialog.
    */
   close() {
+    /** Dialog schließen */
     this.dialog().nativeElement.close();
   }
 
@@ -47,16 +51,19 @@ export class ProfileDialog {
    * Resets edit mode (called when the dialog closes).
    */
   resetEditMode() {
+    /** changeName = false */
     this.changeName.set(false);
+    /** changeAvatar = false */
     this.changeAvatar.set(false);
   }
 
   /**
    * Schließt den Dialog bei Klick auf den Hintergrund.
    * Closes the dialog when the backdrop is clicked.
+   * @param event - Klick-Ereignis / click event
    */
   closeOnBackdrop(event: MouseEvent) {
-    // Ein Klick auf den ::backdrop hat den Dialog selbst als Target
+    /** wenn (Klick-Ziel ist der Dialog selbst, also der ::backdrop) dann schließe Dialog */
     if (event.target === this.dialog().nativeElement) this.close();
   }
 

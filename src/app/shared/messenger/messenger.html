@@ -16,7 +16,7 @@
             <p class="profile-name">{{ user.name }}</p>
             <div class="profile-img">
                 <img [src]="user.avatar" alt="Profilbild">
-                <div class="status" [class.online]="supabase.isOnline(user.id)"></div>
+                <div class="status status-big" [class.online]="supabase.isOnline(user.id)"></div>
             </div>
             }
             <span class="profile-icon"></span>

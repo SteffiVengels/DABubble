@@ -17,24 +17,49 @@
                     <p><span class="hashtag-icon"></span>{{ channel.name }}</p>
                     <button class="close-button" (click)="openPanel.set(null)"></button>
                 </div>
-                <div class="edit-channel-fields">
+                <div class="edit-channel-fields" [class.editing]="editingChannelName()">
                     <div class="edit-channel-top">
                         <p>Channel-Name</p>
-                        <button>Bearbeiten</button>
+                        @if (editingChannelName()) {
+                        <button (click)="saveChannelName()">Speichern</button>
+                        } @else {
+                        <button
+                            (click)="channelNameInput.set(channel.name); editingChannelName.set(true)">Bearbeiten</button>
+                        }
                     </div>
-                    <p>
-                        <span class="hashtag-icon-small"></span>
-                        {{ channel.name }}
-                    </p>
+
+                    @if (editingChannelName()) {
+                    <div class="input">
+                        <span class="hashtag-icon"></span>
+                        <input type="text" [value]="channelNameInput()"
+                            (input)="channelNameInput.set($any($event.target).value)">
+                    </div>
+                    } @else {
+                    <p><span class="hashtag-icon"></span>{{ channel.name }}</p>
+                    }
                 </div>
-                <div class="edit-channel-fields">
+
+                <div class="edit-channel-fields" [class.editing]="editingChannelDescription()">
                     <div class="edit-channel-top">
                         <p>Beschreibung</p>
-                        <button>Bearbeiten</button>
+                        @if (editingChannelDescription()) {
+                        <button (click)="saveChannelDescription()">Speichern</button>
+                        } @else {
+                        <button
+                            (click)="channelDescriptionInput.set(channel.description ?? ''); editingChannelDescription.set(true)">Bearbeiten</button>
+                        }
                     </div>
+                    @if (editingChannelDescription()) {
+                    <div class="input">
+                        <input type="text" [value]="channelDescriptionInput()"
+                            (input)="channelDescriptionInput.set($any($event.target).value)">
+                    </div>
+                    } @else {
                     <p>
                         {{ channel.description }}
                     </p>
+                    }
+
                     <div class="line"></div>
                     <div class="edit-channel-bottom">
                         <p>Erstellt von</p>
@@ -42,7 +67,7 @@
                     </div>
                 </div>
                 <div class="edit-channel-leave">
-                    <button>Channel verlassen</button>
+                    <button (click)="leaveChannel()">Channel verlassen</button>
                 </div>
             </div>
         </div>
@@ -68,8 +93,7 @@
                     </div>
                     <div class="channel-users">
                         @for (user of channelMembers(); track user.id) {
-                        <button class="show-profile"
-                            [class.active]="chatState.activeDirectMessageUser()?.id === user.id">
+                        <button class="show-profile" (click)="showUserProfile(user)">
                             <div class="profile-img">
                                 <img [src]="user.avatar" alt="Profilbild">
                                 <div class="status" [class.online]="supabase.isOnline(user.id)"></div>
@@ -77,11 +101,17 @@
                             <p>{{ user.name }} @if (user.id === supabase.currentUserId()) { <span>(Du)</span> }</p>
                         </button>
                         }
-                        <button class="add-members-button" (click)="openPanel.set('addMembers')"><span class="add-members-icon"></span>Mitglieder
+                        <button class="add-members-button" (click)="openPanel.set('addMembers')"><span
+                                class="add-members-icon"></span>Mitglieder
                             hinzufügen</button>
                     </div>
                 </div>
             </div>
+
+
+
+
+
             }
         </div>
 
@@ -119,7 +149,7 @@
                         </div>
                         @if (memberSearch()) {
                         <div class="search-result">
-                            <div class="search-result-scroll-area">
+                            <div class="search-result-scroll-area custom-scrollbar">
                                 @for (user of filteredUsers(); track user.id) {
                                 <button type="button" class="direct-message" (click)="addUser(user)">
                                     <div class="profile-img">
@@ -144,5 +174,44 @@
         </div>
     </div>
 </div>
+
+<dialog #dialog class="profile-menu centered" (click)="closeOnBackdrop($event)">
+    <div class="overlay-profil details">
+        <div class="profile-details-top">
+            <p>Profil</p>
+            <button class="close-button" (click)="close()"></button>
+        </div>
+        @if (selectedUser(); as user) {
+        <div class="profile-details-img-wrapper">
+            <img class="profile-details-img" [src]="user.avatar" alt="Profilbild">
+        </div>
+        <div class="gap-15">
+            <div class="profile-details-middle space-between">
+                <p class="profile-details-name">{{ user.name }}</p>
+            </div>
+            <div class="profile-details-middle">
+                <div class="status" [class.online]="supabase.isOnline(user.id)"></div>
+                <p class="status-text" [class.online-text]="supabase.isOnline(user.id)">
+                    {{ supabase.isOnline(user.id) ? 'Aktiv' : 'Abwesend' }}
+                </p>
+            </div>
+        </div>
+        <div class="profile-details-mail gap-15">
+            <div>
+                <img src="/img/icons/mail2.png" alt="">
+                <p>E-Mail-Adresse</p>
+            </div>
+            <a href="mailto:{{ user.email }}">{{ user.email }}</a>
+        </div>
+        <!-- Wrapper, damit .overlay-profil > button (Dropdown-Stil) hier nicht greift -->
+        <div class="profile-message">
+            <button><span class="comment-icon"></span>Nachricht</button>
+        </div>
+        }
+    </div>
+</dialog>
+
+<!-- eigenes Profil (kein Gast): wiederverwendeter ProfileDialog mit Bearbeiten -->
+<app-profile-dialog [centered]="true" />
 
 }

@@ -1,0 +1,22 @@
+// DABubble-Logo (Bild + Schriftzug) als Link
+// genutzt in: auth-layout, messenger, legal-notice, privacy-police (Abstände jeweils in der Komponente)
+
+.logo {
+    height: fit-content;
+
+    >a {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        border: none;
+        gap: 16px;
+
+        >img {
+            height: 70px;
+        }
+
+        >.logo-name {
+            height: 24px;
+        }
+    }
+}

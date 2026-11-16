@@ -335,18 +335,32 @@ export class Supabase {
     return true;
   }
 
+  /**
+   * Ändert den Avatar eines Users in der users-Tabelle.
+   * Updates a user's avatar in the users table.
+   *
+   * @param userId - ID des Users. / ID of the user.
+   * @param avatar - Bildpfad vom neuen Avatar. / Image path of the new avatar.
+   * @returns `true`, wenn der Avatar geändert wurde, sonst `false`. / `true` if the avatar was changed, otherwise `false`.
+   */
   async updateUserAvatar(userId: string, avatar: string) {
+    /** error = warte auf: in Tabelle users den Avatar ändern, wo (id ist gleich User ID) */
     const { error } = await this.supabase
       .from('users')
       .update({ avatar })
       .eq('id', userId);
+    /** wenn (error ist vorhanden) dann */
     if (error) {
+      /** zeige Fehler in Konsole */
       console.error('Error updating user avatar:', error);
+      /** gib false zurück */
       return false;
     }
+    /** users = users, aber beim User mit (id ist gleich User ID) den Avatar ersetzen */
     this.users.update(users =>
       users.map(user => user.id === userId ? { ...user, avatar } : user)
     );
+    /** gib true zurück */
     return true;
   }
 
@@ -414,6 +428,7 @@ export class Supabase {
       config: { presence: { key: userId } },
     });
 
+    /** presenceChannel einrichten */
     this.presenceChannel
       /** wenn (Online-Liste ändert sich) dann */
       .on('presence', { event: 'sync' }, () => {
@@ -504,6 +519,72 @@ export class Supabase {
     /** gib ID vom neuen Channel zurück */
     return data.id as number;
   }
+
+  /**
+   * Ändert Name und/oder Beschreibung eines Channels in der channels-Tabelle.
+   * Updates the name and/or description of a channel in the channels table.
+   *
+   * @param channelId - ID des Channels. / ID of the channel.
+   * @param changes - Felder, die geändert werden sollen. / Fields to update.
+   * @returns `true`, wenn der Channel geändert wurde, sonst `false`. / `true` if the channel was updated, otherwise `false`.
+   */
+  async updateChannel(channelId: number, changes: { name?: string; description?: string }) {
+    /** error = warte auf: in Tabelle channels die Felder aus changes ändern, wo (id ist gleich Channel ID) */
+    const { error } = await this.supabase
+      .from('channels')
+      .update(changes)
+      .eq('id', channelId);
+    /** wenn (error ist vorhanden) dann */
+    if (error) {
+      /** zeige Fehler in Konsole */
+      console.error('Error updating channel:', error);
+      /** gib false zurück */
+      return false;
+    }
+    /** channels = channels, aber beim Channel mit (id ist gleich Channel ID) die Felder aus changes ersetzen */
+    this.channels.update(channels =>
+      channels.map(channel => channel.id === channelId ? { ...channel, ...changes } : channel)
+    );
+    /** gib true zurück */
+    return true;
+  }
+
+
+  /**
+   * Trägt den eingeloggten User aus einem Channel aus (löscht seine Zeile in channel_members).
+   * Removes the signed-in user from a channel (deletes their row in channel_members).
+   *
+   * @param channelId - ID des Channels. / ID of the channel.
+   * @returns `true`, wenn der User ausgetragen wurde, sonst `false`. / `true` if the user left, otherwise `false`.
+   */
+  async leaveChannel(channelId: number) {
+    /** userId = ID vom eingeloggten User */
+    const userId = this.currentUserId();
+    /** wenn (kein User eingeloggt) dann gib false zurück */
+    if (!userId) return false;
+    /** error = warte auf: in Tabelle channel_members die Zeile löschen, wo (channel_id ist Channel ID und user_id ist User ID) */
+    const { error } = await this.supabase
+      .from('channel_members')
+      .delete()
+      .eq('channel_id', channelId)
+      .eq('user_id', userId);
+    /** wenn (error ist vorhanden) dann */
+    if (error) {
+      /** zeige Fehler in Konsole */
+      console.error('Error leaving channel:', error);
+      /** gib false zurück */
+      return false;
+    }
+    /** channels = channels, aber beim Channel mit (id ist gleich Channel ID) die eigene ID aus memberIds entfernen */
+    this.channels.update(channels =>
+      channels.map(channel => channel.id === channelId
+        ? { ...channel, memberIds: channel.memberIds.filter(id => id !== userId) }
+        : channel)
+    );
+    /** gib true zurück */
+    return true;
+  }
+
 
 
 }

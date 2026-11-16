@@ -1,0 +1,38 @@
+// Profilbild mit Online-Status-Punkt
+// genutzt in: workspace-menu, main-chat, create-channel-dialog, messenger, profile-dialog
+
+.profile-img {
+    position: relative;
+    height: 50px;
+    width: 50px;
+
+
+    >img {
+        height: 50px;
+        width: 50px;
+        border-radius: 42px;
+
+    }
+}
+
+.status {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    height: 14px;
+    width: 14px;
+    border-radius: 50%;
+    background-color: var(--text-grey);
+    border: 2px solid white;
+}
+
+// größerer Status-Punkt (Header, eigener Profil-Dialog) – zusätzlich zu .status setzen
+.status-big {
+    height: 16px;
+    width: 16px;
+}
+
+.online {
+    background-color: var(--online-green);
+}

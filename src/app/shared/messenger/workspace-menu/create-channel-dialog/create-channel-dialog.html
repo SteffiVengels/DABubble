@@ -2,7 +2,7 @@
     <div class="create-channel-inner">
         <div class="create-channel-top">
             <p>{{ step() === 'form' ? 'Channel erstellen' : 'Leute hinzufügen' }}</p>
-            <button class="close" (click)="close()"></button>
+            <button class="close-button" (click)="close()"></button>
         </div>
         @if(step() === 'form') {
         <p>Channels dienen deinem Team zur Kommunikation. Am besten sollten sie themenbezogen sein #marketing zum
@@ -54,7 +54,7 @@
             </div>
             @if (memberSearch()) {
             <div class="search-result">
-                <div class="search-result-scroll-area">
+                <div class="search-result-scroll-area custom-scrollbar">
                     @for (user of filteredUsers(); track user.id) {
                     <button type="button" class="direct-message" (click)="addUser(user)">
                         <div class="profile-img">
