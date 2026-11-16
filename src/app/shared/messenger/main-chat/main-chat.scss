@@ -13,6 +13,7 @@
 }
 
 .add-members {
+    display: flex;
     background-color: transparent;
     width: 40px;
     height: 40px;
@@ -153,18 +154,18 @@
 .edit-channel-panel {
     right: auto;
     left: 0;
-    max-width: 880px;
+    width: 880px;
     border-radius: 0 30px 30px 30px;
 }
 
 // Mitglieder anzeigen – eigene Breite
 .show-members-panel {
-    max-width: 420px;
+    width: 420px;
 }
 
 // Leute hinzufügen – eigene Breite
 .add-members-panel {
-    max-width: 520px;
+    width: 520px;
 }
 
 .panel-inner {
@@ -177,6 +178,7 @@
 .panel-head {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     font-size: 1.5rem;
     font-weight: 700;
 }
@@ -211,5 +213,361 @@
 
     &:hover {
         background-image: url('/img/icons/close_hover.png');
+    }
+}
+
+.edit-channel-fields {
+    display: flex;
+    flex-direction: column;
+    border-radius: 20px;
+    border: 1px solid var(--light-purple);
+    padding: 20px;
+    gap: 20px;
+
+    >p {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+}
+
+.edit-channel-top {
+    display: flex;
+    justify-content: space-between;
+
+    >p {
+        font-weight: 700;
+    }
+
+    >button {
+        font-family: 'Nunito';
+        padding: 0;
+        background-color: transparent;
+        color: var(--purple3);
+        font-weight: 600;
+        font-size: 1.125rem;
+
+        &:hover {
+            font-weight: 700;
+        }
+    }
+}
+
+.line {
+    background-color: var(--light-purple);
+    height: 1px;
+    width: 100%;
+}
+
+.edit-channel-bottom {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    >p {
+        font-weight: 700;
+    }
+
+    >span {
+        font-size: 1.5rem;
+        color: var(--purple3);
+    }
+}
+
+.edit-channel-leave {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.hashtag-icon-small {
+    display: flex;
+    background-image: url('/img/icons/tag.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+}
+
+.show-profile {
+    background-color: transparent;
+    color: black;
+    font-weight: 400;
+    font-size: 1.125rem;
+    font-family: 'Nunito';
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 4px 20px;
+    border-radius: 30px;
+    width: fit-content;
+
+    &:hover {
+        background-color: var(--bg-color);
+    }
+
+    &:active {
+        color: var(--purple3);
+        font-weight: 700;
+    }
+
+    // Aktuell geöffnete Direktnachricht (Klasse wird über chatState gesetzt)
+    &.active {
+        background-color: var(--bg-color);
+        color: var(--purple3);
+        font-weight: 700;
+    }
+
+    >p {
+        text-align: left;
+    }
+}
+
+.profile-img {
+    position: relative;
+    height: 50px;
+    width: 50px;
+
+
+    >img {
+        height: 50px;
+        width: 50px;
+        border-radius: 42px;
+
+    }
+}
+
+.channel-users {
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+}
+
+.add-members-button {
+    display: flex;
+    align-items: center;
+    background-color: transparent;
+    color: black;
+    gap: 15px;
+    padding: 12px 30px;
+    border-radius: 100px;
+    font-size: 1.125rem;
+    font-family: 'Nunito';
+    font-weight: 400;
+    width: fit-content;
+
+    &:hover {
+        background-color: var(--bg-color);
+        color: var(--purple3);
+    }
+
+    &:hover .add-members-icon {
+        background-image: url('/img/icons/add_person_hover.png');
+    }
+
+    &:active {
+        background-color: transparent;
+        color: black;
+    }
+
+    &:active .add-members-icon {
+        background-image: url('/img/icons/add_person_click.png');
+    }
+}
+
+.add-members-icon {
+    display: flex;
+    background-color: transparent;
+    width: 32px;
+    height: 32px;
+    background-image: url('/img/icons/add_person.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    padding: 0;
+}
+
+.channel-name-add-members {
+    margin-top: 5px;
+    display: flex;
+    gap: 15px;
+    color: var(--purple2);
+}
+
+.hashtag-icon-small-purple {
+    display: flex;
+    background-image: url('/img/icons/tag_hover.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+}
+
+.add-button {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.input-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+
+    >label {
+        font-size: 1.125rem;
+        font-weight: 700;
+
+        >span {
+            color: var(--text-grey);
+            font-weight: 400;
+        }
+    }
+
+    input {
+        border: none;
+        outline: none;
+        width: 100%;
+        font-family: 'Nunito';
+        font-size: 1.125rem;
+    }
+}
+
+.input {
+    background-color: transparent;
+    width: 100%;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    border-radius: 40px;
+    padding: 18px 20px;
+    border: 1px solid var(--light-purple);
+    font-family: 'Nunito';
+    font-size: 1.125rem;
+}
+
+.input:hover {
+    border: 1px solid var(--purple2);
+}
+
+.input:focus-within {
+    border: 1px solid var(--purple3);
+}
+
+.search-result {
+    position: absolute;
+    top: 54px;
+    left: 20px;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    border-radius: 0 20px 20px 20px;
+    border: 1px solid var(--light-purple);
+    max-width: 340px;
+    background-color: white;
+    box-shadow: 0px 2px 10px 0 rgba(0, 0, 0, 0.08);
+}
+
+.search-result-scroll-area {
+    overflow-y: auto;
+    max-height: 240px;
+}
+
+.search-result-scroll-area::-webkit-scrollbar {
+    width: 8px; // ohne diese Regel wird die Farbe ignoriert
+}
+
+.search-result-scroll-area::-webkit-scrollbar-track {
+    background: transparent; // Schiene (Hintergrund)
+}
+
+.search-result-scroll-area::-webkit-scrollbar-thumb {
+    background-color: var(--bg-color); // der Balken, den man zieht
+    border-radius: 4px;
+}
+
+.search-result-scroll-area::-webkit-scrollbar-thumb:hover {
+    background-color: var(--purple2); // optional: Farbe beim Hover
+}
+
+.search-field {
+    position: relative;
+
+    .input {
+        flex-wrap: wrap; // Chips und Input brechen in neue Zeile um, wenn es eng wird
+        gap: 10px;
+    }
+
+    input {
+        flex: 1;
+        min-width: 120px; // Input bleibt neben den Chips immer klickbar
+    }
+}
+
+.chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 8px 4px 4px;
+    border-radius: 30px;
+    background-color: var(--bg-color);
+    font-size: 1rem;
+
+    >img {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+    }
+}
+
+.chip-remove {
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    margin: 0;
+    background-color: transparent;
+    background-image: url('/img/icons/close.png');
+    background-size: contain;
+
+    &:hover {
+        background-image: url('/img/icons/close_hover.png');
+    }
+}
+
+.save-error {
+    color: red;
+    text-align: right;
+}
+
+.no-result {
+    padding: 4px 20px;
+    color: var(--text-grey);
+}
+
+.direct-message {
+    background-color: transparent;
+    color: black;
+    font-weight: 400;
+    font-size: 1.125rem;
+    font-family: 'Nunito';
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 4px 20px;
+    margin-left: 0;
+    margin-bottom: 15px;
+    border-radius: 30px;
+
+    &:hover {
+        background-color: var(--bg-color);
+    }
+
+    &:active {
+        color: var(--purple3);
+        font-weight: 700;
+    }
+
+    >p {
+        text-align: left;
     }
 }

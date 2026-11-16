@@ -17,7 +17,31 @@
                     <p><span class="hashtag-icon"></span>{{ channel.name }}</p>
                     <button class="close-button" (click)="openPanel.set(null)"></button>
                 </div>
-                <div>
+                <div class="edit-channel-fields">
+                    <div class="edit-channel-top">
+                        <p>Channel-Name</p>
+                        <button>Bearbeiten</button>
+                    </div>
+                    <p>
+                        <span class="hashtag-icon-small"></span>
+                        {{ channel.name }}
+                    </p>
+                </div>
+                <div class="edit-channel-fields">
+                    <div class="edit-channel-top">
+                        <p>Beschreibung</p>
+                        <button>Bearbeiten</button>
+                    </div>
+                    <p>
+                        {{ channel.description }}
+                    </p>
+                    <div class="line"></div>
+                    <div class="edit-channel-bottom">
+                        <p>Erstellt von</p>
+                        <span>{{ getUserName(channel.created_by) }}</span>
+                    </div>
+                </div>
+                <div class="edit-channel-leave">
                     <button>Channel verlassen</button>
                 </div>
             </div>
@@ -29,11 +53,11 @@
         <div class="panel-anchor">
             <button class="show-members" (click)="openPanel.set('showMembers')">
                 <div class="show-members-wrapper">
-                    <img class="avatar" src="/img/men1.png" alt="">
-                    <img class="avatar" src="/img/men2.png" alt="">
-                    <img class="avatar" src="/img/men3.png" alt="">
+                    @for (user of channelMembers(); track user.id) {
+                    <img class="avatar" [src]="user.avatar" alt="Profilbild">
+                    }
                 </div>
-                <p>3</p>
+                <p>{{ channelMembers().length }}</p>
             </button>
             @if (openPanel() === 'showMembers') {
             <div class="panel show-members-panel">
@@ -41,6 +65,20 @@
                     <div class="panel-head">
                         <p>Mitglieder</p>
                         <button class="close-button" (click)="openPanel.set(null)"></button>
+                    </div>
+                    <div class="channel-users">
+                        @for (user of channelMembers(); track user.id) {
+                        <button class="show-profile"
+                            [class.active]="chatState.activeDirectMessageUser()?.id === user.id">
+                            <div class="profile-img">
+                                <img [src]="user.avatar" alt="Profilbild">
+                                <div class="status" [class.online]="supabase.isOnline(user.id)"></div>
+                            </div>
+                            <p>{{ user.name }} @if (user.id === supabase.currentUserId()) { <span>(Du)</span> }</p>
+                        </button>
+                        }
+                        <button class="add-members-button" (click)="openPanel.set('addMembers')"><span class="add-members-icon"></span>Mitglieder
+                            hinzufügen</button>
                     </div>
                 </div>
             </div>
@@ -53,9 +91,52 @@
             @if (openPanel() === 'addMembers') {
             <div class="panel add-members-panel">
                 <div class="panel-inner">
-                    <div class="panel-head">
-                        <p>Leute hinzufügen</p>
-                        <button class="close-button" (click)="openPanel.set(null)"></button>
+                    <div>
+                        <div class="panel-head">
+                            <p>Leute hinzufügen</p>
+                            <button class="close-button" (click)="openPanel.set(null)"></button>
+                        </div>
+                        <p class="channel-name-add-members">
+                            <span class="hashtag-icon-small-purple"></span>
+                            {{ channel.name }}
+                        </p>
+                    </div>
+                    <div class="search-field">
+                        <div class="input-fields">
+                            <label class="d_none" for="member-search">Name</label>
+                            <div class="input">
+                                @for (user of selectedUsers(); track user.id) {
+                                <span class="chip">
+                                    <img [src]="user.avatar" alt="">
+                                    {{ user.name }}
+                                    <button type="button" class="chip-remove" (click)="removeUser(user)"
+                                        [attr.aria-label]="user.name + ' entfernen'"></button>
+                                </span>
+                                }
+                                <input type="text" id="member-search" placeholder="Name eingeben" autocomplete="off"
+                                    [value]="memberSearch()" (input)="onMemberSearch($event)">
+                            </div>
+                        </div>
+                        @if (memberSearch()) {
+                        <div class="search-result">
+                            <div class="search-result-scroll-area">
+                                @for (user of filteredUsers(); track user.id) {
+                                <button type="button" class="direct-message" (click)="addUser(user)">
+                                    <div class="profile-img">
+                                        <img [src]="user.avatar" alt="Profilbild">
+                                        <div class="status" [class.online]="supabase.isOnline(user.id)"></div>
+                                    </div>
+                                    <p>{{ user.name }}</p>
+                                </button>
+                                } @empty {
+                                <p class="no-result">Keine Person gefunden</p>
+                                }
+                            </div>
+                        </div>
+                        }
+                    </div>
+                    <div class="add-button">
+                        <button>Hinzufügen</button>
                     </div>
                 </div>
             </div>
