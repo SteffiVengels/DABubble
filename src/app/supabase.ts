@@ -585,6 +585,38 @@ export class Supabase {
     return true;
   }
 
+  /**
+   * Trägt mehrere User als Mitglieder in einen Channel ein (neue Zeilen in channel_members).
+   * Adds several users as members to a channel (new rows in channel_members).
+   *
+   * @param channelId - ID des Channels. / ID of the channel.
+   * @param userIds - IDs der User, die hinzugefügt werden. / IDs of the users to add.
+   * @returns `true`, wenn die User eingetragen wurden, sonst `false`. / `true` if the users were added, otherwise `false`.
+   */
+  async addChannelMembers(channelId: number, userIds: string[]) {
+    /** rows = für jede User-ID eine Zeile { channel_id, user_id } */
+    const rows = userIds.map(userId => ({ channel_id: channelId, user_id: userId }));
+    /** error = warte auf: in Tabelle channel_members alle rows auf einmal einfügen */
+    const { error } = await this.supabase
+      .from('channel_members')
+      .insert(rows);
+    /** wenn (error ist vorhanden) dann */
+    if (error) {
+      /** zeige Fehler in Konsole */
+      console.error('Error adding channel members:', error);
+      /** gib false zurück */
+      return false;
+    }
+    /** channels = channels, aber beim Channel mit (id ist gleich Channel ID) die neuen IDs zu memberIds hinzufügen */
+    this.channels.update(channels =>
+      channels.map(channel => channel.id === channelId
+        ? { ...channel, memberIds: [...channel.memberIds, ...userIds] }
+        : channel)
+    );
+    /** gib true zurück */
+    return true;
+  }
+
 
 
 }

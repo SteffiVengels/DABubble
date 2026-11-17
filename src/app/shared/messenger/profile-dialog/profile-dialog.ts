@@ -14,6 +14,8 @@ export class ProfileDialog {
   dialog = viewChild.required<ElementRef<HTMLDialogElement>>('dialog');
   /** centered = Input von außen: Dialog mittig statt oben rechts anzeigen, Start: false */
   centered = input(false);
+  /** showMessageButton = Input von außen: "Nachricht"-Button anzeigen, Start: false */
+  showMessageButton = input(false);
   /** changeName = Signal, ob der Name gerade bearbeitet wird, Start: false */
   changeName = signal(false);
   /** changeAvatar = Signal, ob der Avatar gerade geändert wird, Start: false */

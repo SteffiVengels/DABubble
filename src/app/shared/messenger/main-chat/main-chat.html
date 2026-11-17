@@ -166,7 +166,7 @@
                         }
                     </div>
                     <div class="add-button">
-                        <button>Hinzufügen</button>
+                        <button [disabled]="isSaving()" (click)="addUsersToChannel()">Hinzufügen</button>
                     </div>
                 </div>
             </div>
@@ -212,6 +212,6 @@
 </dialog>
 
 <!-- eigenes Profil (kein Gast): wiederverwendeter ProfileDialog mit Bearbeiten -->
-<app-profile-dialog [centered]="true" />
+<app-profile-dialog [centered]="true" [showMessageButton]="true" />
 
 }

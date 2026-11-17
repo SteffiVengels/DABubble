@@ -38,6 +38,8 @@ export class MainChat {
 
   /** selectedUser = User, dessen Profil im Dialog gezeigt wird, Start: null */
   selectedUser = signal<User | null>(null);
+  /** isSaving = ob gerade gespeichert wird (Button sperren gegen Doppelklick), Start: false */
+  isSaving = signal(false);
 
   /** ownProfileDialog = Referenz auf die ProfileDialog-Komponente (eigenes Profil mit Bearbeiten) */
   ownProfileDialog = viewChild.required(ProfileDialog);
@@ -102,10 +104,14 @@ export class MainChat {
     const term = this.memberSearch().trim().toLowerCase();
     /** selectedIds = IDs der schon ausgewählten User */
     const selectedIds = this.selectedUsers().map(user => user.id);
+    /** channel = aktuell offener Channel */
+    const channel = this.chatState.activeChannel();
+    /** memberIds = IDs der Channel-Mitglieder, sonst leere Liste */
+    const memberIds = channel?.memberIds ?? [];
     /** gib zurück: filtere directMessageUsers */
     return this.supabase.directMessageUsers().filter(user =>
-      /** behalte User, wenn (nicht ich selbst) */
-      user.id !== this.supabase.currentUserId() &&
+      /** behalte User, wenn (noch nicht Mitglied im Channel) */
+      !memberIds.includes(user.id) &&
       /** und (noch nicht ausgewählt) */
       !selectedIds.includes(user.id) &&
       /** und (Name in Kleinbuchstaben enthält den Suchtext) */
@@ -218,6 +224,33 @@ export class MainChat {
   closeOnBackdrop(event: MouseEvent) {
     /** wenn (Klick-Ziel ist der Dialog selbst, also der ::backdrop) dann schließe Dialog */
     if (event.target === this.dialog().nativeElement) this.close();
+  }
+
+  /**
+   * Fügt die ausgewählten User dem aktiven Channel hinzu und zeigt danach die Mitgliederliste.
+   * Adds the selected users to the active channel and then shows the member list.
+   */
+  async addUsersToChannel() {
+    /** channel = aktuell offener Channel */
+    const channel = this.chatState.activeChannel();
+    /** userIds = IDs der ausgewählten User */
+    const userIds = this.selectedUsers().map(user => user.id);
+    /** wenn (kein Channel oder niemand ausgewählt) dann beende Funktion */
+    if (!channel || !userIds.length) return;
+    /** isSaving = true (Button sperren gegen Doppelklick) */
+    this.isSaving.set(true);
+    /** success = warte auf: addChannelMembers(Channel ID, User IDs) */
+    const success = await this.supabase.addChannelMembers(channel.id, userIds);
+    /** isSaving = false (Button wieder freigeben, egal ob Erfolg oder Fehler) */
+    this.isSaving.set(false);
+    /** wenn (kein success) dann beende Funktion (Auswahl bleibt, man kann es nochmal versuchen) */
+    if (!success) return;
+    /** selectedUsers = leere Liste (Chips entfernen) */
+    this.selectedUsers.set([]);
+    /** memberSearch = leer (Suchfeld leeren) */
+    this.memberSearch.set('');
+    /** openPanel = null (Panel schließen) */
+    this.openPanel.set(null);
   }
 
 

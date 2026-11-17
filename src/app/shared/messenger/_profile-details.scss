@@ -5,7 +5,7 @@
     gap: 45px;
     padding: 40px;
     align-items: center;
-    width: 420px;
+    width: 500px;
 
     >div {
         width: 100%;
@@ -120,4 +120,25 @@
             background-image: url('/img/icons/edit_hover.png');
         }
     }
+}
+
+// "Nachricht"-Button im Profil-Dialog: mittig, Icon links neben dem Text
+.profile-message {
+    display: flex;
+    justify-content: center;
+
+    >button {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+}
+
+.comment-icon {
+    display: flex;
+    width: 24px;
+    height: 24px;
+    background-image: url('/img/icons/mode_comment.png');
+    background-repeat: no-repeat;
+    background-size: contain;
 }

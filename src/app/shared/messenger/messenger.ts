@@ -5,6 +5,7 @@ import { SecondaryChat } from './secondary-chat/secondary-chat';
 import { ProfileDialog } from './profile-dialog/profile-dialog';
 import { Supabase } from '../../supabase';
 import { Router, RouterLink } from '@angular/router';
+import { ChatState } from '../../chat-state';
 
 @Component({
   selector: 'app-messenger',
@@ -19,6 +20,9 @@ export class Messenger {
   supabase = inject(Supabase);
   /** router = Angular Router für die Weiterleitung */
   router = inject(Router);
+  /** chatState = ChatState Service (welcher Chat offen ist) */
+  chatState = inject(ChatState);
+
 
   /**
    * Meldet den User ab, schließt das Menü und leitet zum Login weiter.
@@ -27,6 +31,7 @@ export class Messenger {
   async signOut() {
     /** warte auf: signOut() */
     await this.supabase.signOut();
+    this.chatState.activeChat.set({ type: 'channel', channelId: 1 })
     /** leite zum Login weiter */
     this.router.navigate(['/auth/login']);
   }

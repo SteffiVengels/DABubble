@@ -398,24 +398,3 @@
     display: flex;
     justify-content: flex-end;
 }
-
-// "Nachricht"-Button im Profil-Dialog: mittig, Icon links neben dem Text
-.profile-message {
-    display: flex;
-    justify-content: center;
-
-    >button {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-}
-
-.comment-icon {
-    display: flex;
-    width: 24px;
-    height: 24px;
-    background-image: url('/img/icons/mode_comment.png');
-    background-repeat: no-repeat;
-    background-size: contain;
-}

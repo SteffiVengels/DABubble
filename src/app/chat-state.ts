@@ -27,7 +27,7 @@ export class ChatState {
   private supabase = inject(Supabase);
 
   /** activeChat = Signal mit dem aktuell offenen Chat, Start: null (kein Chat offen) */
-  activeChat = signal<ActiveChat | null>(null);
+  activeChat = signal<ActiveChat | null>({ type: 'channel', channelId: 1 });
   /** previousChat = Signal mit dem zuletzt offenen Chat, Start: null */
   previousChat = signal<ActiveChat | null>(null);
 
