@@ -63,7 +63,7 @@
         @if (showMessageButton()) {
         <!-- Wrapper, damit .overlay-profil > button (Dropdown-Stil) hier nicht greift -->
         <div class="profile-message">
-            <button><span class="comment-icon"></span>Nachricht</button>
+            <button (click)="messageClick.emit()"><span class="comment-icon"></span>Nachricht</button>
         </div>
         }
         }

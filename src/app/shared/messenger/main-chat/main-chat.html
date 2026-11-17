@@ -1,10 +1,10 @@
 @if (chatState.activeChannel(); as channel) {
-<!-- Hintergrund hinter offenem Panel: Klick darauf schließt das Panel -->
+
 @if (openPanel()) {
 <div class="panel-backdrop" (click)="openPanel.set(null)"></div>
 }
 <div class="main-chat-head">
-    <!-- Wrapper = Bezugspunkt (position: relative) für das Panel darunter -->
+
     <div class="panel-anchor">
         <button class="edit-channel" (click)="openPanel.set('editChannel')">
             <span class="hashtag-icon"></span> {{ channel.name }}
@@ -74,7 +74,6 @@
         }
     </div>
     <div class="members">
-        <!-- Wrapper = Bezugspunkt (position: relative) für das Panel darunter -->
         <div class="panel-anchor">
             <button class="show-members" (click)="openPanel.set('showMembers')">
                 <div class="show-members-wrapper">
@@ -175,6 +174,24 @@
     </div>
 </div>
 
+
+
+} @else if (chatState.activeDirectMessageUser(); as user) {
+<div class="main-chat-head">
+    <div class="panel-anchor">
+        <button class="direct-message" (click)="showUserProfile(user)"
+            [class.active]="chatState.activeDirectMessageUser()?.id === user.id">
+            <div class="profile-img">
+                <img [src]="user.avatar" alt="Profilbild">
+                <div class="status" [class.online]="supabase.isOnline(user.id)"></div>
+            </div>
+            <p>{{ user.name }} @if (user.id === supabase.currentUserId()) { <span>(Du)</span> }</p>
+        </button>
+    </div>
+</div>
+
+}
+
 <dialog #dialog class="profile-menu centered" (click)="closeOnBackdrop($event)">
     <div class="overlay-profil details">
         <div class="profile-details-top">
@@ -203,15 +220,14 @@
             </div>
             <a href="mailto:{{ user.email }}">{{ user.email }}</a>
         </div>
-        <!-- Wrapper, damit .overlay-profil > button (Dropdown-Stil) hier nicht greift -->
+
         <div class="profile-message">
-            <button><span class="comment-icon"></span>Nachricht</button>
+            <button (click)="openMessage(user.id)"><span class="comment-icon"></span>Nachricht</button>
         </div>
         }
     </div>
 </dialog>
 
-<!-- eigenes Profil (kein Gast): wiederverwendeter ProfileDialog mit Bearbeiten -->
-<app-profile-dialog [centered]="true" [showMessageButton]="true" />
 
-}
+<app-profile-dialog [centered]="true" [showMessageButton]="true"
+    (messageClick)="openMessage(supabase.currentUserId() ?? '')" />

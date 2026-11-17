@@ -398,3 +398,12 @@
     display: flex;
     justify-content: flex-end;
 }
+
+
+.panel-anchor {
+    >.direct-message {
+        margin: 0;
+        font-weight: 700;
+        font-size: 1.5rem;
+    }
+}

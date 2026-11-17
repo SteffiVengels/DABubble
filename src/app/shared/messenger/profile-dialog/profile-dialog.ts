@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, input, signal, viewChild } from '@angular/core';
+import { Component, ElementRef, inject, input, output, signal, viewChild } from '@angular/core';
 import { Supabase } from '../../../supabase';
 
 @Component({
@@ -16,6 +16,8 @@ export class ProfileDialog {
   centered = input(false);
   /** showMessageButton = Input von außen: "Nachricht"-Button anzeigen, Start: false */
   showMessageButton = input(false);
+  /** messageClick = Output nach außen: meldet Klick auf "Nachricht" (die Eltern-Komponente öffnet den Chat) */
+  messageClick = output();
   /** changeName = Signal, ob der Name gerade bearbeitet wird, Start: false */
   changeName = signal(false);
   /** changeAvatar = Signal, ob der Avatar gerade geändert wird, Start: false */

@@ -217,6 +217,22 @@ export class MainChat {
   }
 
   /**
+   * Schließt Profil-Dialoge und Panels und öffnet die Direktnachricht mit dem User.
+   * Closes profile dialogs and panels and opens the direct message with the user.
+   * @param userId - ID vom Gesprächspartner / ID of the conversation partner
+   */
+  openMessage(userId: string) {
+    /** Profil-Dialog (anderer User) schließen */
+    this.close();
+    /** eigenen Profil-Dialog schließen */
+    this.ownProfileDialog().close();
+    /** openPanel = null (Mitglieder-Panel schließen) */
+    this.openPanel.set(null);
+    /** Direktnachricht mit User öffnen */
+    this.chatState.openDirectMessage(userId);
+  }
+
+  /**
    * Schließt den Dialog bei Klick auf den Hintergrund.
    * Closes the dialog when the backdrop is clicked.
    * @param event - Klick-Ereignis / click event

@@ -174,7 +174,7 @@ export class Supabase {
     const { data, error } = await this.supabase
       .from('channels')
       .select('*, channel_members(user_id)')
-      .order('name');
+      .order('id');
     /** wenn (data ist leer) dann */
     if (!data) {
       /** zeige Fehler in Konsole */
