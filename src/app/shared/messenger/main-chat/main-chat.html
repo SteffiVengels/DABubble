@@ -189,6 +189,35 @@
         </button>
     </div>
 </div>
+<div class="messages-wrapper">
+    <div class="no-message">
+        <div>
+            <img [src]="user.avatar" alt="Profilbild">
+            <p>{{ user.name }} @if (user.id === supabase.currentUserId()) { <span>(Du)</span> }</p>
+        </div>
+        @if (user.id === supabase.currentUserId()) {
+        <p><strong>Dieser Raum ist nur für dich da. </strong>Mache dir Notizen, liste deine To-dos auf oder bewahre Links und Dateien
+            griffbereit auf. Du kannst hier auch gerne Dinge mit dir selbst besprechen.</p>
+        } @else {
+        <p>Diese Unterhaltung findet nur zwischen <span>@{{ user.name }}</span> und dir statt.</p>
+        }
+
+    </div>
+
+</div>
+<div class="message-input">
+    <div class="input-wrapper">
+        <textarea name="direct-message" id="direct-message" rows="2" type="text"
+            placeholder="Nachricht an {{ user.name }} "></textarea>
+        <div class="message-buttons">
+            <div class="message-buttons-wrapper">
+                <button class="reaction-icon"></button>
+                <button class="at-icon"></button>
+            </div>
+            <button class="send-button"></button>
+        </div>
+    </div>
+</div>
 
 }
 
