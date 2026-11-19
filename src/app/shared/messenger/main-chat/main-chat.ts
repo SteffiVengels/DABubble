@@ -3,10 +3,11 @@ import { Supabase } from '../../../supabase';
 import { ChatState } from '../../../chat-state';
 import { User } from '../../interfaces/user';
 import { ProfileDialog } from '../profile-dialog/profile-dialog';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-main-chat',
-  imports: [ProfileDialog],
+  imports: [ProfileDialog, ReactiveFormsModule],
   templateUrl: './main-chat.html',
   styleUrl: './main-chat.scss',
 })
@@ -44,7 +45,10 @@ export class MainChat {
   /** ownProfileDialog = Referenz auf die ProfileDialog-Komponente (eigenes Profil mit Bearbeiten) */
   ownProfileDialog = viewChild.required(ProfileDialog);
 
-
+  /** Formulargruppe mit einem Pflichtfeld für den Nachrichtentext anlegen */
+  messageForm = new FormGroup({
+    text: new FormControl('', [Validators.required, Validators.pattern(/\S/)]),
+  });
   /**
    * Sucht den Namen zu einer User-ID.
    * Looks up the name for a user ID.
@@ -269,6 +273,27 @@ export class MainChat {
     this.openPanel.set(null);
   }
 
+  /** Bei Enter ohne Shift: Zeilenumbruch verhindern und Nachricht senden */
+  onEnter(event: Event): void {
+    /** Event als Tastatur-Event behandeln */
+    const keyEvent = event as KeyboardEvent;
+    /** Mit Shift bleibt der normale Zeilenumbruch erhalten */
+    if (keyEvent.shiftKey) return;
+    /** Standardverhalten (neue Zeile) unterbinden */
+    keyEvent.preventDefault();
+    /** Absenden auslösen */
+    this.sendMessage();
+  }
 
+  /** Nachricht senden, falls gültig, und Formular danach leeren */
+  sendMessage(): void {
+    /** Ungültige oder leere Eingaben ignorieren */
+    if (this.messageForm.invalid) return;
+    /** Text aus dem Formular lesen und Leerzeichen am Rand entfernen */
+    const text = this.messageForm.value.text!.trim();
+    // ... Nachricht speichern/senden
+    /** Eingabefeld zurücksetzen */
+    this.messageForm.reset();
+  }
 
 }

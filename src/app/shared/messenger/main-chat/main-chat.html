@@ -90,19 +90,21 @@
                         <p>Mitglieder</p>
                         <button class="close-button" (click)="openPanel.set(null)"></button>
                     </div>
-                    <div class="channel-users">
-                        @for (user of channelMembers(); track user.id) {
-                        <button class="show-profile" (click)="showUserProfile(user)">
-                            <div class="profile-img">
-                                <img [src]="user.avatar" alt="Profilbild">
-                                <div class="status" [class.online]="supabase.isOnline(user.id)"></div>
-                            </div>
-                            <p>{{ user.name }} @if (user.id === supabase.currentUserId()) { <span>(Du)</span> }</p>
-                        </button>
-                        }
-                        <button class="add-members-button" (click)="openPanel.set('addMembers')"><span
-                                class="add-members-icon"></span>Mitglieder
-                            hinzufügen</button>
+                    <div class="channel-users-scroll-area custom-scrollbar">
+                        <div class="channel-users">
+                            @for (user of channelMembers(); track user.id) {
+                            <button class="show-profile" (click)="showUserProfile(user)">
+                                <div class="profile-img">
+                                    <img [src]="user.avatar" alt="Profilbild">
+                                    <div class="status" [class.online]="supabase.isOnline(user.id)"></div>
+                                </div>
+                                <p>{{ user.name }} @if (user.id === supabase.currentUserId()) { <span>(Du)</span> }</p>
+                            </button>
+                            }
+                            <button class="add-members-button" (click)="openPanel.set('addMembers')"><span
+                                    class="add-members-icon"></span>Mitglieder
+                                hinzufügen</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -191,32 +193,32 @@
 </div>
 <div class="messages-wrapper">
     <div class="no-message">
-        <div>
+        <button class="user-profile-chat" (click)="showUserProfile(user)">
             <img [src]="user.avatar" alt="Profilbild">
             <p>{{ user.name }} @if (user.id === supabase.currentUserId()) { <span>(Du)</span> }</p>
-        </div>
+        </button>
         @if (user.id === supabase.currentUserId()) {
         <p><strong>Dieser Raum ist nur für dich da. </strong>Mache dir Notizen, liste deine To-dos auf oder bewahre Links und Dateien
             griffbereit auf. Du kannst hier auch gerne Dinge mit dir selbst besprechen.</p>
         } @else {
-        <p>Diese Unterhaltung findet nur zwischen <span>@{{ user.name }}</span> und dir statt.</p>
+        <p>Diese Unterhaltung findet nur zwischen <button class="user-name-chat" (click)="showUserProfile(user)">@{{ user.name }}</button> und dir statt.</p>
         }
 
     </div>
 
 </div>
 <div class="message-input">
-    <div class="input-wrapper">
-        <textarea name="direct-message" id="direct-message" rows="2" type="text"
-            placeholder="Nachricht an {{ user.name }} "></textarea>
+    <form class="input-wrapper" (ngSubmit)="sendMessage()" [formGroup]="messageForm">
+        <textarea name="direct-message" id="direct-message" rows="2"
+            placeholder="Nachricht an {{ user.name }} " formControlName="text" (keydown.enter)="onEnter($event)"></textarea>
         <div class="message-buttons">
             <div class="message-buttons-wrapper">
-                <button class="reaction-icon"></button>
-                <button class="at-icon"></button>
+                <button type="button" class="reaction-icon" aria-label="Emoji einfügen"></button>
+                <button type="button" class="at-icon" aria-label="Person erwähnen"></button>
             </div>
-            <button class="send-button"></button>
+            <button type="submit" class="send-button" aria-label="Nachricht senden" [disabled]="messageForm.invalid"></button>
         </div>
-    </div>
+    </form>
 </div>
 
 }

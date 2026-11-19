@@ -1,5 +1,5 @@
 // Schmale lila Scrollbar – zusätzlich zur Klasse des scrollenden Elements setzen
-// genutzt in: workspace-menu (.scroll-area), main-chat + create-channel-dialog (.search-result-scroll-area)
+// genutzt in: workspace-menu (.scroll-area), main-chat + create-channel-dialog (.search-result-scroll-area), main-chat (.channel-users-scroll-area)
 
 .custom-scrollbar::-webkit-scrollbar {
     width: 8px; // ohne diese Regel wird die Farbe ignoriert

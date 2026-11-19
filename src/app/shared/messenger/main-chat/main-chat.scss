@@ -330,6 +330,12 @@
     }
 }
 
+// Wrapper um die Mitgliederliste: max. 600px hoch, danach Scrollbalken
+.channel-users-scroll-area {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
 .channel-users {
     display: flex;
     flex-direction: column;
@@ -421,7 +427,7 @@
 .message-input {
     display: flex;
     flex-direction: column;
-    padding:45px;
+    padding: 45px;
 }
 
 .input-wrapper {
@@ -447,7 +453,7 @@
         border-color: var(--purple3);
     }
 
-    
+
 }
 
 .message-buttons {
@@ -482,7 +488,7 @@
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    background-size: 24px 24px; 
+    background-size: 24px 24px;
 
     &:hover {
         background-image: url('/img/icons/sentiment_satisfied_hover2.png') !important;
@@ -496,7 +502,7 @@
     height: 40px;
     background-size: cover;
     background-repeat: no-repeat;
-    background-size: 24px 24px; 
+    background-size: 24px 24px;
     background-position: center;
 
     &:hover {
@@ -520,16 +526,6 @@
     display: flex;
     flex-direction: column;
     gap: 25px;
-    >div {
-        display: flex;
-        align-items: flex-end;
-        gap: 25px;
-
-        >p {
-            font-weight: 700;
-            font-size: 1.5rem;
-        }
-    }
 
     img {
         height: 100px;
@@ -543,4 +539,36 @@
     }
 
 
+}
+
+.user-name-chat {
+    background-color: transparent;
+    color: var(--purple3);
+    padding: 0;
+    font-family: 'Nunito';
+    font-size: 1.25rem;
+    font-weight: 400;
+
+    &:hover {
+        font-weight: 700;
+    }
+}
+
+.user-profile-chat {
+    background-color: transparent;
+    padding: 0;
+    display: flex;
+    color: black;
+    align-items: flex-end;
+    gap: 25px;
+    font-family: 'Nunito';
+
+    >p {
+        font-weight: 700;
+        font-size: 1.5rem;
+    }
+
+    &:hover {
+        color: var(--purple1);
+    }
 }
