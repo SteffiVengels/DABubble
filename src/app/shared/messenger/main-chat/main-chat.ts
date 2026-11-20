@@ -4,10 +4,11 @@ import { ChatState } from '../../../chat-state';
 import { User } from '../../interfaces/user';
 import { ProfileDialog } from '../profile-dialog/profile-dialog';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-main-chat',
-  imports: [ProfileDialog, ReactiveFormsModule],
+  imports: [ProfileDialog, ReactiveFormsModule, DatePipe],
   templateUrl: './main-chat.html',
   styleUrl: './main-chat.scss',
 })
@@ -42,13 +43,18 @@ export class MainChat {
   /** isSaving = ob gerade gespeichert wird (Button sperren gegen Doppelklick), Start: false */
   isSaving = signal(false);
 
+  /** isSending = ob gerade eine Nachricht gesendet wird (gegen doppeltes Senden), Start: false */
+  isSending = signal(false);
+
   /** ownProfileDialog = Referenz auf die ProfileDialog-Komponente (eigenes Profil mit Bearbeiten) */
   ownProfileDialog = viewChild.required(ProfileDialog);
 
-  /** Formulargruppe mit einem Pflichtfeld für den Nachrichtentext anlegen */
+  /** messageForm = Formular mit einem Feld für den Nachrichtentext */
   messageForm = new FormGroup({
+    /** text = Nachrichtentext, Start: leer, Pflichtfeld und muss mind. ein Zeichen enthalten, das kein Leerzeichen ist */
     text: new FormControl('', [Validators.required, Validators.pattern(/\S/)]),
   });
+
   /**
    * Sucht den Namen zu einer User-ID.
    * Looks up the name for a user ID.
@@ -58,6 +64,17 @@ export class MainChat {
   getUserName(userId: string) {
     /** gib zurück: suche in users den User mit (user.id ist gleich userId) und nimm seinen Namen, sonst 'Unbekannt' */
     return this.supabase.users().find(user => user.id === userId)?.name ?? 'Unbekannt';
+  }
+
+  /**
+   * Sucht den User zu einer User-ID (z. B. für Name und Avatar vom Absender einer Nachricht).
+   * Looks up the user for a user ID (e.g. for the name and avatar of a message's sender).
+   * @param userId - ID vom gesuchten User / ID of the user to look up
+   * @returns den User, sonst null / the user, otherwise null
+   */
+  getUser(userId: string) {
+    /** gib zurück: suche in users den User mit (user.id ist gleich userId), sonst null */
+    return this.supabase.users().find(user => user.id === userId) ?? null;
   }
 
   /** channelMembers = alle User, die Mitglied im aktiven Channel sind */
@@ -273,27 +290,79 @@ export class MainChat {
     this.openPanel.set(null);
   }
 
-  /** Bei Enter ohne Shift: Zeilenumbruch verhindern und Nachricht senden */
+  /**
+   * Schickt bei Enter das Formular ab, in dem das Textfeld steckt; mit Shift + Enter bleibt der normale Zeilenumbruch.
+   * On Enter, submits the form containing the text field; Shift + Enter keeps the normal line break.
+   * @param event - Tastatur-Ereignis aus dem Textfeld / keyboard event from the text field
+   */
   onEnter(event: Event): void {
-    /** Event als Tastatur-Event behandeln */
+    /** keyEvent = Event als Tastatur-Event behandeln */
     const keyEvent = event as KeyboardEvent;
-    /** Mit Shift bleibt der normale Zeilenumbruch erhalten */
+    /** wenn (Shift gedrückt) dann beende Funktion (normaler Zeilenumbruch bleibt) */
     if (keyEvent.shiftKey) return;
     /** Standardverhalten (neue Zeile) unterbinden */
     keyEvent.preventDefault();
-    /** Absenden auslösen */
-    this.sendMessage();
+    /** Formular vom Textfeld abschicken (löst (ngSubmit) aus, also die passende Sende-Funktion) */
+    (keyEvent.target as HTMLTextAreaElement).form?.requestSubmit();
   }
 
-  /** Nachricht senden, falls gültig, und Formular danach leeren */
-  sendMessage(): void {
-    /** Ungültige oder leere Eingaben ignorieren */
-    if (this.messageForm.invalid) return;
-    /** Text aus dem Formular lesen und Leerzeichen am Rand entfernen */
+  /**
+   * Sendet die Nachricht in einen Channel.
+   * Sends the message to a channel.
+   * @param channelId - ID vom Channel / ID of the channel
+   */
+  async sendChannelMessage(channelId: number) {
+    /** wenn (Senden nicht möglich) dann beende Funktion */
+    if (!this.canSend()) return;
+    /** isSending = true (weiteres Senden sperren) */
+    this.isSending.set(true);
+    /** warte auf: saveMessage(Channel ID, keine Gesprächs-ID) */
+    await this.saveMessage(channelId, null);
+    /** isSending = false (Senden wieder freigeben) */
+    this.isSending.set(false);
+  }
+
+  /**
+   * Sendet die Nachricht als Direktnachricht; legt das Gespräch an, wenn es noch keins gibt.
+   * Sends the message as a direct message; creates the conversation if none exists yet.
+   * @param userId - ID vom Gesprächspartner / ID of the conversation partner
+   */
+  async sendDirectMessage(userId: string) {
+    /** wenn (Senden nicht möglich) dann beende Funktion */
+    if (!this.canSend()) return;
+    /** isSending = true (schon vor dem Gespräch-Anlegen sperren, sonst entstehen evtl. zwei Gespräche) */
+    this.isSending.set(true);
+    /** conversationId = warte auf: getOrCreateConversation(User ID) */
+    const conversationId = await this.supabase.getOrCreateConversation(userId);
+    /** wenn (conversationId vorhanden) dann warte auf: saveMessage(kein Channel, Gesprächs-ID) */
+    if (conversationId) await this.saveMessage(null, conversationId);
+    /** isSending = false (Senden wieder freigeben, egal ob Erfolg oder Fehler) */
+    this.isSending.set(false);
+  }
+
+  /**
+   * Prüft, ob gerade gesendet werden darf.
+   * Checks whether sending is currently allowed.
+   * @returns true, wenn das Formular gültig ist und nicht schon gesendet wird / true if the form is valid and nothing is being sent
+   */
+  private canSend() {
+    /** gib zurück: (Formular ist gültig) und (es wird nicht schon gesendet) */
+    return this.messageForm.valid && !this.isSending();
+  }
+
+  /**
+   * Speichert den Text aus dem Formular als Nachricht und leert danach das Formular.
+   * Saves the text from the form as a message and then clears the form.
+   * @param channelId - ID vom Channel oder null / ID of the channel, or null
+   * @param conversationId - ID vom Gespräch oder null / ID of the conversation, or null
+   */
+  private async saveMessage(channelId: number | null, conversationId: number | null) {
+    /** text = Text aus dem Formular ohne Leerzeichen am Rand */
     const text = this.messageForm.value.text!.trim();
-    // ... Nachricht speichern/senden
-    /** Eingabefeld zurücksetzen */
-    this.messageForm.reset();
+    /** success = warte auf: addMessage(Text, Channel ID, Gesprächs-ID) */
+    const success = await this.supabase.addMessage(text, channelId, conversationId);
+    /** wenn (success) dann Formular leeren */
+    if (success) this.messageForm.reset();
   }
 
 }

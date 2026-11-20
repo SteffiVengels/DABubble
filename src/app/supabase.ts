@@ -3,6 +3,8 @@ import { createClient, RealtimeChannel } from '@supabase/supabase-js';
 import { User } from './shared/interfaces/user';
 import { Channel } from './shared/interfaces/channel';
 import { environment } from '../environments/environment';
+import { Message } from './shared/interfaces/message';
+import { DirectConversations } from './shared/interfaces/direct-conversations';
 
 /** Service ist in der ganzen App verfügbar (eine Instanz für alle) */
 @Injectable({
@@ -58,6 +60,14 @@ export class Supabase {
     )
   );
 
+  /** messages = Signal mit Liste aller Nachrichten, die der User sehen darf, Start: leere Liste */
+  messages = signal<Message[]>([]);
+  /** messagesRealtime = Realtime-Channel für messages- und direct_conversations-Tabelle, Start: undefined */
+  messagesRealtime: RealtimeChannel | undefined;
+
+  /** directConversations = Signal mit Liste aller eigenen Direkt-Gespräche, Start: leere Liste */
+  directConversations = signal<DirectConversations[]>([]);
+
   /**
    * Abonniert Änderungen an der users-Tabelle und reagiert auf Login, Logout und Account-Wechsel.
    * Subscribes to changes in the users table and reacts to login, logout and account switches.
@@ -67,6 +77,8 @@ export class Supabase {
     this.subscribeToUsers();
     /** führe Funktion subscribeToChannels() aus */
     this.subscribeToChannels();
+    /** führe Funktion subscribeToMessages() aus */
+    this.subscribeToMessages();
     /** wenn (Login-Status ändert sich) dann führe aus: */
     this.supabase.auth.onAuthStateChange((_event, session) => {
       /** User ID = ID aus Session, sonst null */
@@ -95,6 +107,10 @@ export class Supabase {
       this.getUsers();
       /** führe Funktion getChannels() aus */
       this.getChannels();
+      /** führe Funktion getMessages() aus */
+      this.getMessages();
+      /** führe Funktion getConversations() aus */
+      this.getConversations();
     }
     /** sonst */
     else {
@@ -102,6 +118,10 @@ export class Supabase {
       this.users.set([]);
       /** channels = leere Liste */
       this.channels.set([]);
+      /** messages = leere Liste */
+      this.messages.set([]);
+      /** directConversations = leere Liste */
+      this.directConversations.set([]);
     }
     /** warte auf Funktion leavePresence() */
     await this.leavePresence();
@@ -214,8 +234,72 @@ export class Supabase {
   }
 
   /**
-   * Beendet die Realtime-Abos der users- und channels-Tabellen.
-   * Removes the Realtime subscriptions for the users and channels tables.
+   * Lädt alle Nachrichten, die der User sehen darf, und speichert sie im Signal `messages`.
+   * Loads all messages the user is allowed to see and stores them in the `messages` signal.
+   */
+  async getMessages() {
+    /** data, error = warte auf: aus Tabelle messages alles auswählen, sortiert nach Zeitpunkt */
+    const { data, error } = await this.supabase
+      .from('messages')
+      .select()
+      .order('created_at');
+    /** wenn (data ist leer) dann */
+    if (!data) {
+      /** zeige Fehler in Konsole */
+      console.error('Error fetching messages:', error);
+      /** beende Funktion */
+      return;
+    }
+    /** messages = data */
+    this.messages.set(data);
+  }
+
+  /**
+   * Hört per Realtime auf Änderungen an messages und direct_conversations und lädt die passende Liste neu.
+   * Listens for changes to messages and direct_conversations via Realtime and reloads the matching list.
+   */
+  subscribeToMessages() {
+    /** messagesRealtime = neuer Realtime-Channel 'messages' */
+    this.messagesRealtime = this.supabase
+      .channel('messages')
+      /** wenn (Änderung in Tabelle messages) dann führe Funktion getMessages() aus */
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, () => this.getMessages())
+      /** wenn (Änderung in Tabelle direct_conversations) dann führe Funktion getConversations() aus */
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'direct_conversations' }, () => this.getConversations())
+      /** Channel starten, dann prüfe Status */
+      .subscribe((status, err) => {
+        /** wenn (Status ist Fehler oder Zeitüberschreitung) dann */
+        if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          /** zeige Fehler in Konsole */
+          console.error(status, err);
+        }
+      });
+  }
+
+  /**
+   * Lädt alle eigenen Direkt-Gespräche und speichert sie im Signal `directConversations`.
+   * Loads all of the user's direct conversations and stores them in the `directConversations` signal.
+   */
+  async getConversations() {
+    /** data, error = warte auf: aus Tabelle direct_conversations alles auswählen, sortiert nach Zeitpunkt */
+    const { data, error } = await this.supabase
+      .from('direct_conversations')
+      .select()
+      .order('created_at');
+    /** wenn (data ist leer) dann */
+    if (!data) {
+      /** zeige Fehler in Konsole */
+      console.error('Error fetching conversations:', error);
+      /** beende Funktion */
+      return;
+    }
+    /** directConversations = data */
+    this.directConversations.set(data);
+  }
+
+  /**
+   * Beendet die Realtime-Abos der users-, channels- und messages-Tabellen.
+   * Removes the Realtime subscriptions for the users, channels and messages tables.
    */
   ngOnDestroy() {
     /** wenn (channel ist vorhanden) dann */
@@ -225,6 +309,8 @@ export class Supabase {
     }
     /** wenn (channelsRealtime ist vorhanden) dann entferne channelsRealtime */
     if (this.channelsRealtime) this.supabase.removeChannel(this.channelsRealtime);
+    /** wenn (messagesRealtime ist vorhanden) dann entferne messagesRealtime */
+    if (this.messagesRealtime) this.supabase.removeChannel(this.messagesRealtime);
   }
 
   /**
@@ -617,6 +703,100 @@ export class Supabase {
     return true;
   }
 
+  /**
+   * Sucht in der geladenen Liste das Direkt-Gespräch zwischen dem eingeloggten User und einem anderen User.
+   * Looks up the direct conversation between the signed-in user and another user in the loaded list.
+   *
+   * @param otherUserId - ID vom Gesprächspartner. / ID of the conversation partner.
+   * @returns Das Gespräch oder `undefined`, wenn es noch keins gibt. / The conversation, or `undefined` if none exists yet.
+   */
+  findConversation(otherUserId: string) {
+    /** myId = ID vom eingeloggten User */
+    const myId = this.currentUserId();
+    /** gib zurück: suche in directConversations das Gespräch */
+    return this.directConversations().find(conv =>
+      /** mit (user1 ist ich und user2 ist Gesprächspartner) */
+      (conv.user1_id === myId && conv.user2_id === otherUserId) ||
+      /** oder (user1 ist Gesprächspartner und user2 ist ich) */
+      (conv.user1_id === otherUserId && conv.user2_id === myId)
+    );
+  }
 
+  /**
+   * Sucht das Direkt-Gespräch zwischen dem eingeloggten User und einem anderen User; legt es an, wenn es noch keins gibt.
+   * Finds the direct conversation between the signed-in user and another user; creates it if none exists yet.
+   *
+   * @param otherUserId - ID vom Gesprächspartner. / ID of the conversation partner.
+   * @returns Die ID vom Gespräch oder `null` bei einem Fehler. / The ID of the conversation, or `null` on error.
+   */
+  async getOrCreateConversation(otherUserId: string) {
+    /** myId = ID vom eingeloggten User */
+    const myId = this.currentUserId();
+    /** wenn (kein User eingeloggt) dann gib null zurück */
+    if (!myId) return null;
+    /** existing = Funktion findConversation(ID vom Gesprächspartner) */
+    const existing = this.findConversation(otherUserId);
+    /** wenn (Gespräch gefunden) dann gib seine ID zurück */
+    if (existing) return existing.id;
+    /** data, error = warte auf: in Tabelle direct_conversations (ich, Gesprächspartner) einfügen und die neue ID zurückgeben */
+    const { data, error } = await this.supabase
+      .from('direct_conversations')
+      .insert({ user1_id: myId, user2_id: otherUserId })
+      .select('id')
+      .single();
+    /** wenn (error ist vorhanden) dann */
+    if (error) {
+      /** zeige Fehler in Konsole */
+      console.error('Error creating conversation:', error);
+      /** gib null zurück */
+      return null;
+    }
+    /** warte auf: Funktion getConversations() (neues Gespräch sofort in der Liste, verhindert doppeltes Anlegen) */
+    await this.getConversations();
+    /** gib ID vom neuen Gespräch zurück */
+    return data.id as number;
+  }
+
+  /**
+   * Speichert eine neue Nachricht in der messages-Tabelle (in einem Channel oder einem Direkt-Gespräch).
+   * Saves a new message to the messages table (in a channel or a direct conversation).
+   *
+   * @param content - Nachrichtentext. / Message text.
+   * @param channelId - ID vom Channel oder `null` bei einer Direktnachricht. / ID of the channel, or `null` for a direct message.
+   * @param conversationId - ID vom Gespräch oder `null` bei einer Channel-Nachricht. / ID of the conversation, or `null` for a channel message.
+   * @returns `true`, wenn die Nachricht gespeichert wurde, sonst `false`. / `true` if the message was saved, otherwise `false`.
+   */
+  async addMessage(content: string, channelId: number | null, conversationId: number | null) {
+    /** myId = ID vom eingeloggten User */
+    const myId = this.currentUserId();
+    /** wenn (kein User eingeloggt) dann gib false zurück */
+    if (!myId) return false;
+    /** error = warte auf: in Tabelle messages die neue Nachricht einfügen */
+    const { error } = await this.supabase
+      .from('messages')
+      .insert({
+        /** content = Nachrichtentext */
+        content,
+        /** sender_id = ich */
+        sender_id: myId,
+        /** channel_id = Channel ID oder null */
+        channel_id: channelId,
+        /** conversation_id = Gesprächs-ID oder null */
+        conversation_id: conversationId,
+      });
+    /** wenn (error ist vorhanden) dann */
+    if (error) {
+      /** zeige Fehler in Konsole */
+      console.error('Error sending message:', error);
+      /** gib false zurück */
+      return false;
+    }
+    /** warte auf: Funktion getMessages() (neue Nachricht erscheint sofort, auch ohne Realtime) */
+    await this.getMessages();
+    /** gib true zurück */
+    return true;
+  }
+
+  
 
 }

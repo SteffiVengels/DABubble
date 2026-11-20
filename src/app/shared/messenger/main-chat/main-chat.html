@@ -191,32 +191,54 @@
         </button>
     </div>
 </div>
-<div class="messages-wrapper">
-    <div class="no-message">
-        <button class="user-profile-chat" (click)="showUserProfile(user)">
-            <img [src]="user.avatar" alt="Profilbild">
-            <p>{{ user.name }} @if (user.id === supabase.currentUserId()) { <span>(Du)</span> }</p>
-        </button>
-        @if (user.id === supabase.currentUserId()) {
-        <p><strong>Dieser Raum ist nur für dich da. </strong>Mache dir Notizen, liste deine To-dos auf oder bewahre Links und Dateien
-            griffbereit auf. Du kannst hier auch gerne Dinge mit dir selbst besprechen.</p>
-        } @else {
-        <p>Diese Unterhaltung findet nur zwischen <button class="user-name-chat" (click)="showUserProfile(user)">@{{ user.name }}</button> und dir statt.</p>
+<div class="messages-wrapper custom-scrollbar">
+    <div class="message-scrollbar">
+        @for (message of chatState.activeMessages(); track message.id) {
+        @let sender = getUser(message.sender_id);
+        <div class="message" [class.own]="message.sender_id === supabase.currentUserId()">
+            <img [src]="sender?.avatar" alt="Profilbild">
+            <div>
+                <div class="message-top">
+                    <p class="message-name">{{ sender?.name }}</p>
+                    <p class="message-time">{{ message.created_at | date:'HH:mm' }} Uhr</p>
+                </div>
+
+                <p class="message-content">{{ message.content }}</p>
+            </div>
+
+
+        </div>
+
+        } @empty {
+        <div class="no-message">
+            <button class="user-profile-chat" (click)="showUserProfile(user)">
+                <img [src]="user.avatar" alt="Profilbild">
+                <p>{{ user.name }} @if (user.id === supabase.currentUserId()) { <span>(Du)</span> }</p>
+            </button>
+            @if (user.id === supabase.currentUserId()) {
+            <p><strong>Dieser Raum ist nur für dich da. </strong>Mache dir Notizen, liste deine To-dos auf oder bewahre
+                Links und Dateien
+                griffbereit auf. Du kannst hier auch gerne Dinge mit dir selbst besprechen.</p>
+            } @else {
+            <p>Diese Unterhaltung findet nur zwischen <button class="user-name-chat" (click)="showUserProfile(user)">@{{
+                    user.name }}</button> und dir statt.</p>
+            }
+
+        </div>
         }
-
     </div>
-
 </div>
 <div class="message-input">
-    <form class="input-wrapper" (ngSubmit)="sendMessage()" [formGroup]="messageForm">
-        <textarea name="direct-message" id="direct-message" rows="2"
-            placeholder="Nachricht an {{ user.name }} " formControlName="text" (keydown.enter)="onEnter($event)"></textarea>
+    <form class="input-wrapper" (ngSubmit)="sendDirectMessage(user.id)" [formGroup]="messageForm">
+        <textarea name="direct-message" id="direct-message" rows="2" placeholder="Nachricht an {{ user.name }} "
+            formControlName="text" (keydown.enter)="onEnter($event)"></textarea>
         <div class="message-buttons">
             <div class="message-buttons-wrapper">
                 <button type="button" class="reaction-icon" aria-label="Emoji einfügen"></button>
                 <button type="button" class="at-icon" aria-label="Person erwähnen"></button>
             </div>
-            <button type="submit" class="send-button" aria-label="Nachricht senden" [disabled]="messageForm.invalid"></button>
+            <button type="submit" class="send-button" aria-label="Nachricht senden"
+                [disabled]="messageForm.invalid"></button>
         </div>
     </form>
 </div>

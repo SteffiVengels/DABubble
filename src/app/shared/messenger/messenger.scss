@@ -110,6 +110,7 @@ header {
     >main {
         display: flex;
         flex: 8;
+        min-width: 0;
     }
 
     >aside {

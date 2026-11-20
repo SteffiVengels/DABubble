@@ -54,6 +54,37 @@ export class ChatState {
     return this.supabase.users().find(user => user.id === chat.userId) ?? null;
   });
 
+  /** activeMessages = Nachrichten vom aktiven Chat (ohne Thread-Antworten), aktualisiert sich automatisch */
+  activeMessages = computed(() => {
+    /** chat = aktueller Chat */
+    const chat = this.activeChat();
+    /** wenn (kein Chat offen) dann gib leere Liste zurück */
+    if (!chat) return [];
+    /** messages = alle geladenen Nachrichten */
+    const messages = this.supabase.messages();
+    /** wenn (Chat ist ein Channel) dann */
+    if (chat.type === 'channel') {
+      /** gib zurück: filtere messages */
+      return messages.filter(message =>
+        /** behalte Nachricht, wenn (channel_id ist gleich aktiver channelId) */
+        message.channel_id === chat.channelId &&
+        /** und (keine Thread-Antwort) */
+        message.parent_id === null
+      );
+    }
+    /** conversation = Funktion findConversation(ID vom Gesprächspartner) */
+    const conversation = this.supabase.findConversation(chat.userId);
+    /** wenn (noch kein Gespräch vorhanden) dann gib leere Liste zurück */
+    if (!conversation) return [];
+    /** gib zurück: filtere messages */
+    return messages.filter(message =>
+      /** behalte Nachricht, wenn (conversation_id ist gleich ID vom Gespräch) */
+      message.conversation_id === conversation.id &&
+      /** und (keine Thread-Antwort) */
+      message.parent_id === null
+    );
+  });
+
   /**
    * Öffnet einen Channel-Chat.
    * Opens a channel chat.
