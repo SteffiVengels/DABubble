@@ -69,16 +69,10 @@ export class Supabase {
   directConversations = signal<DirectConversations[]>([]);
 
   /**
-   * Abonniert Änderungen an der users-Tabelle und reagiert auf Login, Logout und Account-Wechsel.
-   * Subscribes to changes in the users table and reacts to login, logout and account switches.
+   * Reagiert auf Login, Logout und Account-Wechsel.
+   * Reacts to login, logout and account switches.
    */
   constructor() {
-    /** führe Funktion subscribeToUsers() aus */
-    this.subscribeToUsers();
-    /** führe Funktion subscribeToChannels() aus */
-    this.subscribeToChannels();
-    /** führe Funktion subscribeToMessages() aus */
-    this.subscribeToMessages();
     /** wenn (Login-Status ändert sich) dann führe aus: */
     this.supabase.auth.onAuthStateChange((_event, session) => {
       /** User ID = ID aus Session, sonst null */
@@ -101,8 +95,16 @@ export class Supabase {
     if (userId === this.presenceUserId) return;
     /** aktuelle User ID ist User ID */
     this.presenceUserId = userId;
+    /** warte auf Funktion stopRealtime() (alte Abos vom vorherigen User weg) */
+    await this.stopRealtime();
     /** wenn (User ID ist nicht null) dann */
     if (userId) {
+      /** führe Funktion subscribeToUsers() aus */
+      this.subscribeToUsers();
+      /** führe Funktion subscribeToChannels() aus */
+      this.subscribeToChannels();
+      /** führe Funktion subscribeToMessages() aus */
+      this.subscribeToMessages();
       /** führe Funktion getUsers() aus */
       this.getUsers();
       /** führe Funktion getChannels() aus */
@@ -301,16 +303,24 @@ export class Supabase {
    * Beendet die Realtime-Abos der users-, channels- und messages-Tabellen.
    * Removes the Realtime subscriptions for the users, channels and messages tables.
    */
+  async stopRealtime() {
+    /** wenn (channel ist vorhanden) dann warte auf: entferne channel */
+    if (this.channel) await this.supabase.removeChannel(this.channel);
+    /** wenn (channelsRealtime ist vorhanden) dann warte auf: entferne channelsRealtime */
+    if (this.channelsRealtime) await this.supabase.removeChannel(this.channelsRealtime);
+    /** wenn (messagesRealtime ist vorhanden) dann warte auf: entferne messagesRealtime */
+    if (this.messagesRealtime) await this.supabase.removeChannel(this.messagesRealtime);
+    /** channel, channelsRealtime, messagesRealtime = undefined */
+    this.channel = this.channelsRealtime = this.messagesRealtime = undefined;
+  }
+
+  /**
+   * Beendet alle Realtime-Abos, wenn der Service zerstört wird.
+   * Removes all Realtime subscriptions when the service is destroyed.
+   */
   ngOnDestroy() {
-    /** wenn (channel ist vorhanden) dann */
-    if (this.channel) {
-      /** entferne channel */
-      this.supabase.removeChannel(this.channel);
-    }
-    /** wenn (channelsRealtime ist vorhanden) dann entferne channelsRealtime */
-    if (this.channelsRealtime) this.supabase.removeChannel(this.channelsRealtime);
-    /** wenn (messagesRealtime ist vorhanden) dann entferne messagesRealtime */
-    if (this.messagesRealtime) this.supabase.removeChannel(this.messagesRealtime);
+    /** führe Funktion stopRealtime() aus */
+    this.stopRealtime();
   }
 
   /**
@@ -797,6 +807,36 @@ export class Supabase {
     return true;
   }
 
-  
+  /**
+ * Ändert den Text einer Nachricht in der messages-Tabelle.
+ * Updates the text of a message in the messages table.
+ *
+ * @param messageId - ID der Nachricht. / ID of the message.
+ * @param content - Der neue Nachrichtentext. / The new message text.
+ * @returns `true`, wenn die Nachricht geändert wurde, sonst `false`. / `true` if the message was changed, otherwise `false`.
+ */
+  async updateMessage(messageId: number, content: string) {
+    /** error = warte auf: in Tabelle messages den Text ändern, wo (id ist gleich Nachrichten-ID) */
+    const { error } = await this.supabase
+      .from('messages')
+      .update({ content })
+      .eq('id', messageId);
+    /** wenn (error ist vorhanden) dann */
+    if (error) {
+      /** zeige Fehler in Konsole */
+      console.error('Error updating message:', error);
+      /** gib false zurück */
+      return false;
+    }
+    /** messages = messages, aber bei der Nachricht mit (id ist gleich Nachrichten-ID) den Text ersetzen */
+    this.messages.update(messages =>
+      messages.map(message => message.id === messageId ? { ...message, content } : message)
+    );
+    /** gib true zurück */
+    return true;
+  }
+
+
+
 
 }

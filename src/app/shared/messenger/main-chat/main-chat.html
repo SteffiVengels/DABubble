@@ -4,7 +4,6 @@
 <div class="panel-backdrop" (click)="openPanel.set(null)"></div>
 }
 <div class="main-chat-head">
-
     <div class="panel-anchor">
         <button class="edit-channel" (click)="openPanel.set('editChannel')">
             <span class="hashtag-icon"></span> {{ channel.name }}
@@ -27,7 +26,6 @@
                             (click)="channelNameInput.set(channel.name); editingChannelName.set(true)">Bearbeiten</button>
                         }
                     </div>
-
                     @if (editingChannelName()) {
                     <div class="input">
                         <span class="hashtag-icon"></span>
@@ -38,7 +36,6 @@
                     <p><span class="hashtag-icon"></span>{{ channel.name }}</p>
                     }
                 </div>
-
                 <div class="edit-channel-fields" [class.editing]="editingChannelDescription()">
                     <div class="edit-channel-top">
                         <p>Beschreibung</p>
@@ -108,14 +105,8 @@
                     </div>
                 </div>
             </div>
-
-
-
-
-
             }
         </div>
-
         <div class="panel-anchor">
             <button class="add-members" (click)="openPanel.set('addMembers')">
             </button>
@@ -175,8 +166,82 @@
         </div>
     </div>
 </div>
+<div class="messages-wrapper custom-scrollbar">
+    <div class="message-scrollbar">
+        @for (message of chatState.activeMessages(); track message.id) {
+        @let sender = getUser(message.sender_id);
+        <div [class]="message.sender_id === supabase.currentUserId() ? 'message-own' : 'message'">
+            <img [src]="sender?.avatar" alt="Profilbild">
+            @if (this.editMessage() && message.id === this.editMessageId()) {
+            <div class="change-message">
+                <textarea [value]="editMessageInput()"
+                    (input)="editMessageInput.set($any($event.target).value)"></textarea>
+                <div class="change-message-buttons">
+                    <button type="button" class="reaction-icon" aria-label="Emoji einfügen"></button>
+                    <div>
+                        <button class="secondary" (click)="cancelEditMessage()">Abbrechen</button>
+                        <button (click)="saveEditMessage(message)">Speichern</button>
+                    </div>
+                </div>
+            </div>
+            } @else {
+            <div class="message-body">
+                <div class="message-top">
+                    <p class="message-name">{{ sender?.name }}</p>
+                    <p class="message-time">{{ message.created_at | date:'HH:mm' }} Uhr</p>
+                </div>
 
+                <p class="message-content">{{ message.content }}</p>
+            </div>
+            }
+            @if (!this.editMessage()) {
+            <div class="reaction-bar">
+                <button class="reaction-checkmark"></button>
+                <button class="reaction-thumps-up"></button>
+                <button class="reaction-emoji"></button>
+                <button class="reaction-answer"></button>
+                @if (message.sender_id === supabase.currentUserId()) {
+                <button class="reaction-options" (click)="toggleOptions(message.id); $event.stopPropagation()"></button>
+                }
+                <div class="edit-message" [class.open]="openOptionsId() === message.id">
+                    <button (click)="showEditMessage(message)">Nachricht
+                        bearbeiten</button>
+                </div>
+            </div>
+            }
+        </div>
+        } @empty {
+        <div class="no-message">
+            <div class="channel-name">
+                <span class="hashtag-icon"></span>
+                <p>{{ channel.name }}</p>
+            </div>
+            @if (channel.created_by === supabase.currentUserId()){
+            <p>Du hast diesen Channel erstellt. Das ist der Anfang des Channels <span class="purple-color"># {{
+                    channel.name }}</span></p>
+            } @else {
+            <p>{{ getUserName(channel.created_by) }} hat diesen Channel erstellt. Das ist der Anfang des Channels <span
+                    class="purple-color"># {{ channel.name }}</span></p>
+            }
 
+        </div>
+        }
+    </div>
+</div>
+<div class="message-input">
+    <form class="input-wrapper" (ngSubmit)="sendChannelMessage(channel.id)" [formGroup]="messageForm">
+        <textarea name="direct-message" id="direct-message" rows="2" placeholder="Nachricht an {{ channel.name }} "
+            formControlName="text" (keydown.enter)="onEnter($event)"></textarea>
+        <div class="message-buttons">
+            <div class="message-buttons-wrapper">
+                <button type="button" class="reaction-icon" aria-label="Emoji einfügen"></button>
+                <button type="button" class="at-icon" aria-label="Person erwähnen"></button>
+            </div>
+            <button type="submit" class="send-button" aria-label="Nachricht senden"
+                [disabled]="messageForm.invalid"></button>
+        </div>
+    </form>
+</div>
 
 } @else if (chatState.activeDirectMessageUser(); as user) {
 <div class="main-chat-head">
@@ -195,9 +260,24 @@
     <div class="message-scrollbar">
         @for (message of chatState.activeMessages(); track message.id) {
         @let sender = getUser(message.sender_id);
-        <div class="message" [class.own]="message.sender_id === supabase.currentUserId()">
+        <div [class]="message.sender_id === supabase.currentUserId() ? 'message-own' : 'message'"
+            [class.options-open]="openOptionsId() === message.id">
             <img [src]="sender?.avatar" alt="Profilbild">
-            <div>
+            @if (this.editMessage() && message.id === this.editMessageId()) {
+            <div class="change-message">
+                <textarea [value]="editMessageInput()"
+                    (input)="editMessageInput.set($any($event.target).value)"></textarea>
+                <div class="change-message-buttons">
+                    <button type="button" class="reaction-icon" aria-label="Emoji einfügen"></button>
+                    <div>
+                        <button class="secondary" (click)="cancelEditMessage()">Abbrechen</button>
+                        <button (click)="saveEditMessage(message)">Speichern</button>
+                    </div>
+                </div>
+            </div>
+
+            } @else {
+            <div class="message-body">
                 <div class="message-top">
                     <p class="message-name">{{ sender?.name }}</p>
                     <p class="message-time">{{ message.created_at | date:'HH:mm' }} Uhr</p>
@@ -205,8 +285,24 @@
 
                 <p class="message-content">{{ message.content }}</p>
             </div>
+            }
 
 
+            @if (!this.editMessage()) {
+            <div class="reaction-bar">
+                <button class="reaction-checkmark"></button>
+                <button class="reaction-thumps-up"></button>
+                <button class="reaction-emoji"></button>
+                <button class="reaction-answer"></button>
+                @if (message.sender_id === supabase.currentUserId()) {
+                <button class="reaction-options" (click)="toggleOptions(message.id); $event.stopPropagation()"></button>
+                }
+                <div class="edit-message" [class.open]="openOptionsId() === message.id">
+                    <button (click)="showEditMessage(message)">Nachricht
+                        bearbeiten</button>
+                </div>
+            </div>
+            }
         </div>
 
         } @empty {

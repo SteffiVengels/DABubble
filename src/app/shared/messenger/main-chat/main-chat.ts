@@ -5,12 +5,16 @@ import { User } from '../../interfaces/user';
 import { ProfileDialog } from '../profile-dialog/profile-dialog';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DatePipe } from '@angular/common';
+import { Message } from '../../interfaces/message';
+
 
 @Component({
   selector: 'app-main-chat',
   imports: [ProfileDialog, ReactiveFormsModule, DatePipe],
   templateUrl: './main-chat.html',
   styleUrl: './main-chat.scss',
+  /** wenn (irgendwo im Dokument geklickt wird) dann führe Funktion closeOptions() aus */
+  host: { '(document:click)': 'closeOptions()' },
 })
 export class MainChat {
   /** supabase = Supabase Service */
@@ -46,6 +50,15 @@ export class MainChat {
   /** isSending = ob gerade eine Nachricht gesendet wird (gegen doppeltes Senden), Start: false */
   isSending = signal(false);
 
+  /** openOptionsId = Signal mit ID der Nachricht, deren Options-Menü offen ist, Start: null (keins) */
+  openOptionsId = signal<number | null>(null);
+
+  editMessage = signal(false);
+
+  editMessageId = signal<number | null>(null);
+
+  editMessageInput = signal('');
+
   /** ownProfileDialog = Referenz auf die ProfileDialog-Komponente (eigenes Profil mit Bearbeiten) */
   ownProfileDialog = viewChild.required(ProfileDialog);
 
@@ -75,6 +88,40 @@ export class MainChat {
   getUser(userId: string) {
     /** gib zurück: suche in users den User mit (user.id ist gleich userId), sonst null */
     return this.supabase.users().find(user => user.id === userId) ?? null;
+  }
+
+  /**
+   * Öffnet oder schließt das Options-Menü einer Nachricht.
+   * Opens or closes the options menu of a message.
+   * @param messageId - ID der Nachricht / ID of the message
+   */
+  toggleOptions(messageId: number) {
+    /** openOptionsId = wenn (Menü dieser Nachricht schon offen) dann null, sonst messageId */
+    this.openOptionsId.update(id => id === messageId ? null : messageId);
+  }
+
+  showEditMessage(message: Message) {
+    /** editMessage = true (Bearbeiten-Modus an) */
+    this.editMessage.set(true);
+    /** editMessageId = ID der Nachricht */
+    this.editMessageId.set(message.id);
+    /** editMessageInput = Text der Nachricht */
+    this.editMessageInput.set(message.content);
+  }
+
+  cancelEditMessage() {
+    this.editMessage.set(false);
+    this.editMessageId.set(null);
+    this.editMessageInput.set('');
+  }
+
+  /**
+   * Schließt das offene Options-Menü.
+   * Closes the open options menu.
+   */
+  closeOptions() {
+    /** openOptionsId = null (kein Menü offen) */
+    this.openOptionsId.set(null);
   }
 
   /** channelMembers = alle User, die Mitglied im aktiven Channel sind */
@@ -174,6 +221,18 @@ export class MainChat {
     /** wenn (success) dann editingChannelDescription = false (Bearbeiten-Modus beenden) */
     if (success) this.editingChannelDescription.set(false);
   }
+
+  async saveEditMessage(message: Message) {
+    /** content = Text aus dem Bearbeiten-Feld, ohne Leerzeichen am Anfang und Ende */
+    const content = this.editMessageInput().trim();
+    /** wenn (content ist leer) dann beende Funktion */
+    if (!content) return;
+    /** success = warte auf Funktion updateMessage(Nachrichten-ID, content) */
+    const success = await this.supabase.updateMessage(message.id, content);
+    /** wenn (success) dann führe Funktion cancelEditMessage() aus (Bearbeiten-Modus aus) */
+    if (success) this.cancelEditMessage();
+  }
+
 
   /**
    * Trägt den eingeloggten User aus dem aktiven Channel aus und schließt den Chat.
