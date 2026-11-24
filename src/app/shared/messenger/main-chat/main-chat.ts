@@ -69,6 +69,49 @@ export class MainChat {
   });
 
   /**
+ * Prüft, ob die Nachricht an Position index an einem neuen Tag liegt.
+ * DE: Gibt true zurück, wenn vor dieser Nachricht ein Datums-Trenner angezeigt werden soll.
+ * EN: Returns true if a date separator should be shown before this message.
+ * @param index - Position der Nachricht in activeMessages / position of the message
+ * @returns true bei neuem Tag / true on a new day
+ */
+  isNewDay(index: number): boolean {
+    /** hole alle Nachrichten des aktiven Chats */
+    const messages = this.chatState.activeMessages();
+    /** erste Nachricht bekommt immer einen Trenner */
+    if (index === 0) return true;
+    /** Datum der aktuellen Nachricht ohne Uhrzeit */
+    const current = new Date(messages[index].created_at).toDateString();
+    /** Datum der vorherigen Nachricht ohne Uhrzeit */
+    const previous = new Date(messages[index - 1].created_at).toDateString();
+    /** neuer Tag, wenn die beiden Daten verschieden sind */
+    return current !== previous;
+  }
+
+  /**
+   * Erzeugt den Text für den Datums-Trenner.
+   * DE: Gibt "Heute", "Gestern" oder z. B. "Montag, 23. November" zurück.
+   * EN: Returns "Heute", "Gestern" or e.g. "Montag, 23. November".
+   * @param date - Zeitstempel der Nachricht / message timestamp
+   * @returns Anzeigetext / label text
+   */
+  getDateLabel(date: string | Date): string {
+    /** Datum der Nachricht ohne Uhrzeit */
+    const day = new Date(date).toDateString();
+    /** heutiges Datum ohne Uhrzeit */
+    const today = new Date().toDateString();
+    /** gestriges Datum berechnen */
+    const yesterday = new Date(Date.now() - 86_400_000).toDateString();
+    /** wenn heute, dann "Heute" */
+    if (day === today) return 'Heute';
+    /** wenn gestern, dann "Gestern" */
+    if (day === yesterday) return 'Gestern';
+    /** sonst Wochentag, Tag und Monat auf Deutsch */
+    return new Date(date).toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });
+  }
+
+
+  /**
    * Sucht den Namen zu einer User-ID.
    * Looks up the name for a user ID.
    * @param userId - ID vom gesuchten User / ID of the user to look up

@@ -168,7 +168,14 @@
 </div>
 <div class="messages-wrapper custom-scrollbar">
     <div class="message-scrollbar">
-        @for (message of chatState.activeMessages(); track message.id) {
+        @for (message of chatState.activeMessages(); track message.id; let i = $index) {
+        @if (isNewDay(i)) {
+        <div class="date-separator">
+            <div class="divider"></div>
+            <span>{{ getDateLabel(message.created_at) }}</span>
+            <div class="divider"></div>
+        </div>
+        }
         @let sender = getUser(message.sender_id);
         <div [class]="message.sender_id === supabase.currentUserId() ? 'message-own' : 'message'">
             <img [src]="sender?.avatar" alt="Profilbild">
@@ -258,7 +265,14 @@
 </div>
 <div class="messages-wrapper custom-scrollbar">
     <div class="message-scrollbar">
-        @for (message of chatState.activeMessages(); track message.id) {
+        @for (message of chatState.activeMessages(); track message.id; let i = $index) {
+        @if (isNewDay(i)) {
+        <div class="date-separator">
+            <div class="divider"></div>
+            <span>{{ getDateLabel(message.created_at) }}</span>
+            <div class="divider"></div>
+        </div>
+        }
         @let sender = getUser(message.sender_id);
         <div [class]="message.sender_id === supabase.currentUserId() ? 'message-own' : 'message'"
             [class.options-open]="openOptionsId() === message.id">
