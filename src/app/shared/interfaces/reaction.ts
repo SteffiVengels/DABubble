@@ -10,4 +10,5 @@ export interface ReactionGroup {
     code: string;
     count: number;
     reactedByMe: boolean;
+    userIds: string[];
 }

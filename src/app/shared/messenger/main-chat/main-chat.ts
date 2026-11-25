@@ -63,6 +63,9 @@ export class MainChat {
   /** reactionPickerBelow = ob der Reaktions-Picker nach unten aufgehen soll (oben zu wenig Platz), Start: false */
   reactionPickerBelow = signal(false);
 
+  /** reactionPickerSource = wo der Reaktions-Picker geöffnet wurde: 'bar' (Reaktions-Leiste) oder 'reactions' (unter der Nachricht), Start: 'bar' */
+  reactionPickerSource = signal<'bar' | 'reactions'>('bar');
+
   /** openEmojiPicker = welcher Emoji-Picker offen ist: 'message' (Eingabefeld), 'edit' (Bearbeiten) oder null (keiner), Start: null */
   openEmojiPicker = signal<'message' | 'edit' | null>(null);
 
@@ -508,6 +511,34 @@ export class MainChat {
     if (success) this.messageForm.reset();
   }
 
+  /**
+   * Die zwei zuletzt von mir genutzten Emojis für die Reaktions-Leiste, aufgefüllt mit ✅ und 👍.
+   * The two emojis I used most recently for the reaction bar, filled up with ✅ and 👍.
+   * computed = wird nur neu berechnet, wenn sich reactions() oder currentUserId() ändert
+   */
+  recentEmojis = computed(() => {
+    /** myReactions = filtere alle Reaktionen, behalte Reaktion, wenn (user_id ist gleich meine ID) */
+    const myReactions = this.supabase.reactions().filter(reaction => reaction.user_id === this.supabase.currentUserId());
+    /** codes = leere Liste für die Emoji-Codes */
+    const codes: string[] = [];
+    /** für jede Reaktion in myReactions, von hinten (neueste zuerst) */
+    for (let i = myReactions.length - 1; i >= 0; i--) {
+      /** code = Emoji-Code der Reaktion */
+      const code = myReactions[i].emoji_code;
+      /** wenn (code noch nicht in codes) dann code zu codes hinzufügen */
+      if (!codes.includes(code)) codes.push(code);
+      /** wenn (2 Codes gefunden) dann Schleife beenden */
+      if (codes.length === 2) break;
+    }
+    /** für jeden Standard-Code: ✅ (2705) und 👍 (1f44d) */
+    for (const fallback of ['2705', '1f44d']) {
+      /** wenn (weniger als 2 Codes) und (Standard-Code noch nicht in codes) dann hinzufügen */
+      if (codes.length < 2 && !codes.includes(fallback)) codes.push(fallback);
+    }
+    /** gib codes zurück */
+    return codes;
+  });
+
   getMessageReactions(messageId: number): ReactionGroup[] {
     /** reactions = filtere alle Reaktionen, behalte Reaktion, wenn (message_id ist gleich Nachrichten-ID) */
     const reactions = this.supabase.reactions().filter(reaction => reaction.message_id === messageId);
@@ -519,13 +550,15 @@ export class MainChat {
       let group = groups.find(g => g.code === reaction.emoji_code);
       /** wenn (kein Kästchen gefunden) dann */
       if (!group) {
-        /** group = neues Kästchen mit diesem Emoji, Anzahl 0, nicht von mir */
-        group = { code: reaction.emoji_code, count: 0, reactedByMe: false };
+        /** group = neues Kästchen mit diesem Emoji, Anzahl 0, nicht von mir, noch keine User */
+        group = { code: reaction.emoji_code, count: 0, reactedByMe: false, userIds: [] };
         /** füge neues Kästchen zu groups hinzu */
         groups.push(group);
       }
       /** count vom Kästchen um 1 erhöhen */
       group.count++;
+      /** füge User-ID der Reaktion zu userIds vom Kästchen hinzu */
+      group.userIds.push(reaction.user_id);
       /** wenn (Reaktion ist von mir) dann reactedByMe = true */
       if (reaction.user_id === this.supabase.currentUserId()) group.reactedByMe = true;
     }
@@ -535,12 +568,45 @@ export class MainChat {
   }
 
   /**
+   * Baut die Namen für den Reaktions-Tooltip, z. B. "Sofia Müller und Du".
+   * Builds the names for the reaction tooltip, e.g. "Sofia Müller und Du".
+   * @param group - Reaktions-Gruppe / reaction group
+   * @returns Namen als Text / names as text
+   */
+  getReactionNames(group: ReactionGroup): string {
+    /** names = für jede User-ID (außer meiner) den Namen holen, sonst 'Unbekannt' */
+    const names = group.userIds
+      .filter(id => id !== this.supabase.currentUserId())
+      .map(id => this.getUser(id)?.name ?? 'Unbekannt');
+    /** wenn (ich habe reagiert) dann 'Du' ans Ende anhängen */
+    if (group.reactedByMe) names.push('Du');
+    /** wenn (nur ein Name) dann diesen zurückgeben */
+    if (names.length === 1) return names[0];
+    /** gib zurück: alle Namen außer dem letzten mit Komma, dann 'und' + letzter Name */
+    return names.slice(0, -1).join(', ') + ' und ' + names[names.length - 1];
+  }
+
+  /**
+   * Gibt das passende Verb für den Reaktions-Tooltip zurück.
+   * Returns the matching verb for the reaction tooltip.
+   * @param group - Reaktions-Gruppe / reaction group
+   * @returns 'hast reagiert', 'hat reagiert' oder 'haben reagiert'
+   */
+  getReactionVerb(group: ReactionGroup): string {
+    /** wenn (mehr als eine Person) dann 'haben reagiert' */
+    if (group.count > 1) return 'haben reagiert';
+    /** wenn (nur ich) dann 'hast reagiert', sonst 'hat reagiert' */
+    return group.reactedByMe ? 'hast reagiert' : 'hat reagiert';
+  }
+
+  /**
    * Öffnet oder schließt den Reaktions-Picker einer Nachricht und prüft, ob er nach oben oder unten aufgehen soll.
    * Opens or closes the reaction picker of a message and checks whether it should open upwards or downwards.
    * @param messageId - ID der Nachricht / ID of the message
    * @param event - Klick-Ereignis vom Emoji-Button / click event from the emoji button
+   * @param source - wo geklickt wurde: 'bar' oder 'reactions' / where it was clicked: 'bar' or 'reactions'
    */
-  toggleReactionPicker(messageId: number, event: MouseEvent) {
+  toggleReactionPicker(messageId: number, event: MouseEvent, source: 'bar' | 'reactions' = 'bar') {
     /** button = Button, auf den geklickt wurde */
     const button = event.currentTarget as HTMLElement;
     /** list = Nachrichtenliste, in der der Button steckt (die schneidet den Picker oben ab) */
@@ -551,8 +617,24 @@ export class MainChat {
     const spaceAbove = button.getBoundingClientRect().top - listTop;
     /** reactionPickerBelow = wenn (Platz oben kleiner als 250px) dann true, sonst false */
     this.reactionPickerBelow.set(spaceAbove < 250);
-    /** reactionPickerId = wenn (Picker dieser Nachricht schon offen) dann null, sonst messageId */
-    this.reactionPickerId.update(id => id === messageId ? null : messageId);
+    /** alreadyOpen = ob der Picker dieser Nachricht an genau dieser Stelle schon offen ist */
+    const alreadyOpen = this.reactionPickerId() === messageId && this.reactionPickerSource() === source;
+    /** reactionPickerSource = source (merken, wo der Picker aufgehen soll) */
+    this.reactionPickerSource.set(source);
+    /** reactionPickerId = wenn (schon offen) dann null (schließen), sonst messageId (öffnen) */
+    this.reactionPickerId.set(alreadyOpen ? null : messageId);
+  }
+
+  /**
+   * Prüft, ob der Reaktions-Picker einer Nachricht an einer bestimmten Stelle offen ist.
+   * Checks whether the reaction picker of a message is open at a specific place.
+   * @param messageId - ID der Nachricht / ID of the message
+   * @param source - 'bar' oder 'reactions' / 'bar' or 'reactions'
+   * @returns true, wenn offen / true if open
+   */
+  isReactionPickerOpen(messageId: number, source: 'bar' | 'reactions'): boolean {
+    /** gib zurück: (Picker-ID ist gleich Nachrichten-ID) und (Quelle ist gleich source) */
+    return this.reactionPickerId() === messageId && this.reactionPickerSource() === source;
   }
 
   addReactionFromPicker(messageId: number, emoji: Emoji) {
