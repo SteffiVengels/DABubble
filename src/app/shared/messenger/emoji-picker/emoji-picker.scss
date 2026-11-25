@@ -1,0 +1,55 @@
+:host {
+    position: relative;
+}
+
+:host(.in-reaction-bar) section {
+    bottom: 40px;
+    left: -120px;
+}
+
+// fremde Nachricht: Bar steht rechts → Picker am rechten Rand ausrichten, geht nach links auf
+:host(.in-reaction-bar.align-right) section {
+    left: auto;
+    right: 40px;
+    border-radius: 30px 30px 0 30px;
+}
+
+// oben zu wenig Platz → Picker geht unter der Bar auf
+:host(.in-reaction-bar.open-below) section {
+    bottom: auto;
+    top: 48px;
+    border-radius: 0 30px 30px 30px;
+}
+
+// fremde Nachricht + unten: Ecke oben rechts eckig
+:host(.in-reaction-bar.align-right.open-below) section {
+    border-radius: 30px 0 30px 30px;
+}
+
+section {
+    position: absolute;
+    bottom: 140px;
+    left: -80px;
+    background-color: white;
+    padding: 10px 20px;
+    border-radius: 30px 30px 30px 0px;
+    box-shadow: 0px 6px 14px 0 rgba(0, 0, 0, 0.2);
+    display: grid;
+    grid-template-columns: repeat(8, 1fr)
+}
+
+.emojis {
+    height: 40px;
+    width: 40px;
+    padding: 0;
+    background-color: transparent;
+
+    &:hover {
+        background-color: var(--bg-color);
+    }
+
+    >img {
+        height: 24px;
+        width: 24px;
+    }
+}

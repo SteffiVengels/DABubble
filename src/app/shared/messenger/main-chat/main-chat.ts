@@ -6,11 +6,15 @@ import { ProfileDialog } from '../profile-dialog/profile-dialog';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { Message } from '../../interfaces/message';
+import { EmojiPicker } from '../emoji-picker/emoji-picker';
+import { Emoji } from '../../interfaces/emoji';
+import { ReactionGroup } from '../../interfaces/reaction';
+import { getEmojiPath } from '../../emojis';
 
 
 @Component({
   selector: 'app-main-chat',
-  imports: [ProfileDialog, ReactiveFormsModule, DatePipe],
+  imports: [ProfileDialog, ReactiveFormsModule, DatePipe, EmojiPicker],
   templateUrl: './main-chat.html',
   styleUrl: './main-chat.scss',
   /** wenn (irgendwo im Dokument geklickt wird) dann führe Funktion closeOptions() aus */
@@ -53,6 +57,18 @@ export class MainChat {
   /** openOptionsId = Signal mit ID der Nachricht, deren Options-Menü offen ist, Start: null (keins) */
   openOptionsId = signal<number | null>(null);
 
+  /** reactionPickerId = ID der Nachricht, deren Reaktions-Picker offen ist, Start: null (keiner) */
+  reactionPickerId = signal<number | null>(null);
+
+  /** reactionPickerBelow = ob der Reaktions-Picker nach unten aufgehen soll (oben zu wenig Platz), Start: false */
+  reactionPickerBelow = signal(false);
+
+  /** openEmojiPicker = welcher Emoji-Picker offen ist: 'message' (Eingabefeld), 'edit' (Bearbeiten) oder null (keiner), Start: null */
+  openEmojiPicker = signal<'message' | 'edit' | null>(null);
+
+  /** getEmojiPath = Funktion, die aus dem Code den Bildpfad baut */
+  getEmojiPath = getEmojiPath;
+
   editMessage = signal(false);
 
   editMessageId = signal<number | null>(null);
@@ -67,6 +83,27 @@ export class MainChat {
     /** text = Nachrichtentext, Start: leer, Pflichtfeld und muss mind. ein Zeichen enthalten, das kein Leerzeichen ist */
     text: new FormControl('', [Validators.required, Validators.pattern(/\S/)]),
   });
+
+  toggleEmojiPicker(picker: 'message' | 'edit') {
+    /** openEmojiPicker = wenn (dieser Picker schon offen) dann null, sonst dieser Picker */
+    this.openEmojiPicker.update(open => open === picker ? null : picker);
+  }
+
+  addEmojiToMessage(emoji: Emoji) {
+    /** text = aktueller Text im Eingabefeld, wenn leer dann '' */
+    const text = this.messageForm.controls.text.value ?? '';
+    /** schreibe (alter Text + Emoji-Zeichen) zurück ins Eingabefeld */
+    this.messageForm.controls.text.setValue(text + emoji.char);
+    /** showEmojiPicker = false (Picker schließen) */
+    this.openEmojiPicker.set(null);
+  }
+
+  addEmojiToEdit(emoji: Emoji) {
+    /** editMessageInput = alter Text + Emoji-Zeichen */
+    this.editMessageInput.update(text => text + emoji.char);
+    /** openEmojiPicker = null (Picker schließen) */
+    this.openEmojiPicker.set(null);
+  }
 
   /**
  * Prüft, ob die Nachricht an Position index an einem neuen Tag liegt.
@@ -165,6 +202,10 @@ export class MainChat {
   closeOptions() {
     /** openOptionsId = null (kein Menü offen) */
     this.openOptionsId.set(null);
+    /** showEmojiPicker = false (Picker schließen) */
+    this.openEmojiPicker.set(null);
+    /** reactionPickerId = null (Reaktions-Picker schließen) */
+    this.reactionPickerId.set(null);
   }
 
   /** channelMembers = alle User, die Mitglied im aktiven Channel sind */
@@ -465,6 +506,60 @@ export class MainChat {
     const success = await this.supabase.addMessage(text, channelId, conversationId);
     /** wenn (success) dann Formular leeren */
     if (success) this.messageForm.reset();
+  }
+
+  getMessageReactions(messageId: number): ReactionGroup[] {
+    /** reactions = filtere alle Reaktionen, behalte Reaktion, wenn (message_id ist gleich Nachrichten-ID) */
+    const reactions = this.supabase.reactions().filter(reaction => reaction.message_id === messageId);
+    /** groups = leere Liste für die zusammengefassten Reaktionen */
+    const groups: ReactionGroup[] = [];
+    /** für jede Reaktion in reactions */
+    for (const reaction of reactions) {
+      /** group = suche in groups das Kästchen, wo (code ist gleich emoji_code der Reaktion), sonst undefined */
+      let group = groups.find(g => g.code === reaction.emoji_code);
+      /** wenn (kein Kästchen gefunden) dann */
+      if (!group) {
+        /** group = neues Kästchen mit diesem Emoji, Anzahl 0, nicht von mir */
+        group = { code: reaction.emoji_code, count: 0, reactedByMe: false };
+        /** füge neues Kästchen zu groups hinzu */
+        groups.push(group);
+      }
+      /** count vom Kästchen um 1 erhöhen */
+      group.count++;
+      /** wenn (Reaktion ist von mir) dann reactedByMe = true */
+      if (reaction.user_id === this.supabase.currentUserId()) group.reactedByMe = true;
+    }
+    /** gib groups zurück */
+    return groups;
+
+  }
+
+  /**
+   * Öffnet oder schließt den Reaktions-Picker einer Nachricht und prüft, ob er nach oben oder unten aufgehen soll.
+   * Opens or closes the reaction picker of a message and checks whether it should open upwards or downwards.
+   * @param messageId - ID der Nachricht / ID of the message
+   * @param event - Klick-Ereignis vom Emoji-Button / click event from the emoji button
+   */
+  toggleReactionPicker(messageId: number, event: MouseEvent) {
+    /** button = Button, auf den geklickt wurde */
+    const button = event.currentTarget as HTMLElement;
+    /** list = Nachrichtenliste, in der der Button steckt (die schneidet den Picker oben ab) */
+    const list = button.closest('.messages-wrapper');
+    /** listTop = oberer Rand der Liste im Fenster, wenn keine Liste gefunden dann 0 */
+    const listTop = list ? list.getBoundingClientRect().top : 0;
+    /** spaceAbove = Platz zwischen oberem Rand der Liste und Button */
+    const spaceAbove = button.getBoundingClientRect().top - listTop;
+    /** reactionPickerBelow = wenn (Platz oben kleiner als 250px) dann true, sonst false */
+    this.reactionPickerBelow.set(spaceAbove < 250);
+    /** reactionPickerId = wenn (Picker dieser Nachricht schon offen) dann null, sonst messageId */
+    this.reactionPickerId.update(id => id === messageId ? null : messageId);
+  }
+
+  addReactionFromPicker(messageId: number, emoji: Emoji) {
+    /** führe Funktion toggleReaction(Nachrichten-ID, Code vom Emoji) aus */
+    this.supabase.toggleReaction(messageId, emoji.code);
+    /** reactionPickerId = null (Picker schließen) */
+    this.reactionPickerId.set(null);
   }
 
 }

@@ -1,0 +1,7 @@
+<section class="emoji-picker-wrapper" (click)="$event.stopPropagation()">
+@for (emoji of emojis; track emoji.code) {
+    <button class="emojis" type="button" (click)="emojiSelected.emit(emoji)">
+        <img [src]="getEmojiPath(emoji.code)" [alt]="emoji.name" [title]="emoji.name">
+    </button>
+}
+</section>

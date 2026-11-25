@@ -177,14 +177,19 @@
         </div>
         }
         @let sender = getUser(message.sender_id);
-        <div [class]="message.sender_id === supabase.currentUserId() ? 'message-own' : 'message'">
+        <div [class]="message.sender_id === supabase.currentUserId() ? 'message-own' : 'message'"
+            [class.picker-open]="reactionPickerId() === message.id">
             <img [src]="sender?.avatar" alt="Profilbild">
             @if (this.editMessage() && message.id === this.editMessageId()) {
             <div class="change-message">
                 <textarea [value]="editMessageInput()"
                     (input)="editMessageInput.set($any($event.target).value)"></textarea>
                 <div class="change-message-buttons">
-                    <button type="button" class="reaction-icon" aria-label="Emoji einfügen"></button>
+                    <button type="button" class="reaction-icon" aria-label="Emoji einfügen"
+                        (click)="toggleEmojiPicker('edit'); $event.stopPropagation()"></button>
+                    @if (openEmojiPicker() === 'edit') {
+                    <app-emoji-picker (emojiSelected)="addEmojiToEdit($event)" />
+                    }
                     <div>
                         <button class="secondary" (click)="cancelEditMessage()">Abbrechen</button>
                         <button (click)="saveEditMessage(message)">Speichern</button>
@@ -199,13 +204,23 @@
                 </div>
 
                 <p class="message-content">{{ message.content }}</p>
+                <div class="reactions">
+                    @for (group of getMessageReactions(message.id); track group.code) {
+                    <button type="button" class="reaction-chip" [class.own]="group.reactedByMe"
+                        (click)="supabase.toggleReaction(message.id, group.code)">
+                        <img [src]="getEmojiPath(group.code)" alt="">
+                        <span>{{ group.count }}</span>
+                    </button>
+                    }
+                </div>
             </div>
             }
             @if (!this.editMessage()) {
             <div class="reaction-bar">
                 <button class="reaction-checkmark"></button>
                 <button class="reaction-thumps-up"></button>
-                <button class="reaction-emoji"></button>
+                <button type="button" class="reaction-emoji" aria-label="Reaktion hinzufügen"
+                    (click)="toggleReactionPicker(message.id, $event); $event.stopPropagation()"></button>
                 <button class="reaction-answer"></button>
                 @if (message.sender_id === supabase.currentUserId()) {
                 <button class="reaction-options" (click)="toggleOptions(message.id); $event.stopPropagation()"></button>
@@ -214,6 +229,12 @@
                     <button (click)="showEditMessage(message)">Nachricht
                         bearbeiten</button>
                 </div>
+                @if (reactionPickerId() === message.id) {
+                <app-emoji-picker class="in-reaction-bar"
+                    [class.align-right]="message.sender_id !== supabase.currentUserId()"
+                    [class.open-below]="reactionPickerBelow()"
+                    (emojiSelected)="addReactionFromPicker(message.id, $event)" />
+                }
             </div>
             }
         </div>
@@ -241,8 +262,12 @@
             formControlName="text" (keydown.enter)="onEnter($event)"></textarea>
         <div class="message-buttons">
             <div class="message-buttons-wrapper">
-                <button type="button" class="reaction-icon" aria-label="Emoji einfügen"></button>
+                <button type="button" class="reaction-icon" aria-label="Emoji einfügen"
+                    (click)="toggleEmojiPicker('message'); $event.stopPropagation()"></button>
                 <button type="button" class="at-icon" aria-label="Person erwähnen"></button>
+                @if (openEmojiPicker() === 'message') {
+                <app-emoji-picker (emojiSelected)="addEmojiToMessage($event)" />
+                }
             </div>
             <button type="submit" class="send-button" aria-label="Nachricht senden"
                 [disabled]="messageForm.invalid"></button>
@@ -275,14 +300,19 @@
         }
         @let sender = getUser(message.sender_id);
         <div [class]="message.sender_id === supabase.currentUserId() ? 'message-own' : 'message'"
-            [class.options-open]="openOptionsId() === message.id">
+            [class.options-open]="openOptionsId() === message.id"
+            [class.picker-open]="reactionPickerId() === message.id">
             <img [src]="sender?.avatar" alt="Profilbild">
             @if (this.editMessage() && message.id === this.editMessageId()) {
             <div class="change-message">
                 <textarea [value]="editMessageInput()"
                     (input)="editMessageInput.set($any($event.target).value)"></textarea>
                 <div class="change-message-buttons">
-                    <button type="button" class="reaction-icon" aria-label="Emoji einfügen"></button>
+                    <button type="button" class="reaction-icon" aria-label="Emoji einfügen"
+                        (click)="toggleEmojiPicker('edit'); $event.stopPropagation()"></button>
+                    @if (openEmojiPicker() === 'edit') {
+                    <app-emoji-picker (emojiSelected)="addEmojiToEdit($event)" />
+                    }
                     <div>
                         <button class="secondary" (click)="cancelEditMessage()">Abbrechen</button>
                         <button (click)="saveEditMessage(message)">Speichern</button>
@@ -298,6 +328,15 @@
                 </div>
 
                 <p class="message-content">{{ message.content }}</p>
+                <div class="reactions">
+                    @for (group of getMessageReactions(message.id); track group.code) {
+                    <button type="button" class="reaction-chip" [class.own]="group.reactedByMe"
+                        (click)="supabase.toggleReaction(message.id, group.code)">
+                        <img [src]="getEmojiPath(group.code)" alt="">
+                        <span>{{ group.count }}</span>
+                    </button>
+                    }
+                </div>
             </div>
             }
 
@@ -306,7 +345,8 @@
             <div class="reaction-bar">
                 <button class="reaction-checkmark"></button>
                 <button class="reaction-thumps-up"></button>
-                <button class="reaction-emoji"></button>
+                <button type="button" class="reaction-emoji" aria-label="Reaktion hinzufügen"
+                    (click)="toggleReactionPicker(message.id, $event); $event.stopPropagation()"></button>
                 <button class="reaction-answer"></button>
                 @if (message.sender_id === supabase.currentUserId()) {
                 <button class="reaction-options" (click)="toggleOptions(message.id); $event.stopPropagation()"></button>
@@ -315,6 +355,12 @@
                     <button (click)="showEditMessage(message)">Nachricht
                         bearbeiten</button>
                 </div>
+                @if (reactionPickerId() === message.id) {
+                <app-emoji-picker class="in-reaction-bar"
+                    [class.align-right]="message.sender_id !== supabase.currentUserId()"
+                    [class.open-below]="reactionPickerBelow()"
+                    (emojiSelected)="addReactionFromPicker(message.id, $event)" />
+                }
             </div>
             }
         </div>
@@ -344,8 +390,12 @@
             formControlName="text" (keydown.enter)="onEnter($event)"></textarea>
         <div class="message-buttons">
             <div class="message-buttons-wrapper">
-                <button type="button" class="reaction-icon" aria-label="Emoji einfügen"></button>
+                <button type="button" class="reaction-icon" aria-label="Emoji einfügen"
+                    (click)="toggleEmojiPicker('message'); $event.stopPropagation()"></button>
                 <button type="button" class="at-icon" aria-label="Person erwähnen"></button>
+                @if (openEmojiPicker() === 'message') {
+                <app-emoji-picker (emojiSelected)="addEmojiToMessage($event)" />
+                }
             </div>
             <button type="submit" class="send-button" aria-label="Nachricht senden"
                 [disabled]="messageForm.invalid"></button>

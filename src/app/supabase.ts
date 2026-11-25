@@ -5,6 +5,7 @@ import { Channel } from './shared/interfaces/channel';
 import { environment } from '../environments/environment';
 import { Message } from './shared/interfaces/message';
 import { DirectConversations } from './shared/interfaces/direct-conversations';
+import { Reaction } from './shared/interfaces/reaction';
 
 /** Service ist in der ganzen App verfügbar (eine Instanz für alle) */
 @Injectable({
@@ -64,6 +65,7 @@ export class Supabase {
   messages = signal<Message[]>([]);
   /** messagesRealtime = Realtime-Channel für messages- und direct_conversations-Tabelle, Start: undefined */
   messagesRealtime: RealtimeChannel | undefined;
+  reactions = signal<Reaction[]>([]);
 
   /** directConversations = Signal mit Liste aller eigenen Direkt-Gespräche, Start: leere Liste */
   directConversations = signal<DirectConversations[]>([]);
@@ -113,6 +115,7 @@ export class Supabase {
       this.getMessages();
       /** führe Funktion getConversations() aus */
       this.getConversations();
+      this.getReactions();
     }
     /** sonst */
     else {
@@ -124,6 +127,7 @@ export class Supabase {
       this.messages.set([]);
       /** directConversations = leere Liste */
       this.directConversations.set([]);
+      this.reactions.set([]);
     }
     /** warte auf Funktion leavePresence() */
     await this.leavePresence();
@@ -269,6 +273,7 @@ export class Supabase {
       /** wenn (Änderung in Tabelle direct_conversations) dann führe Funktion getConversations() aus */
       .on('postgres_changes', { event: '*', schema: 'public', table: 'direct_conversations' }, () => this.getConversations())
       /** Channel starten, dann prüfe Status */
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'reactions' }, () => this.getReactions())
       .subscribe((status, err) => {
         /** wenn (Status ist Fehler oder Zeitüberschreitung) dann */
         if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
@@ -837,6 +842,66 @@ export class Supabase {
   }
 
 
+  async getReactions() {
+    const { data, error } = await this.supabase
+      .from('reactions')
+      .select()
+      .order('created_at');
+    if (!data) {
+      console.error('Error fetching reactions:', error);
+      return;
+    }
+    this.reactions.set(data);
+  }
 
+  async addReaction(messageId: number, emojiCode: string) {
+    const myId = this.currentUserId();
+    if (!myId) return false;
+    const { error } = await this.supabase
+      .from('reactions')
+      .insert({
+        message_id: messageId,
+        user_id: myId,
+        emoji_code: emojiCode,
+      });
+    if (error) {
+      console.error('Error adding reaction:', error);
+      return false;
+    }
+    await this.getReactions();
+    return true;
+  }
+
+  async removeReaction(messageId: number, emojiCode: string) {
+    const myId = this.currentUserId();
+    if (!myId) return false;
+    const { error } = await this.supabase
+      .from('reactions')
+      .delete()
+      .eq('message_id', messageId)
+      .eq('user_id', myId)
+      .eq('emoji_code', emojiCode);
+    if (error) {
+      console.error('Error removing reaction:', error);
+      return false;
+    }
+    await this.getReactions();
+    return true;
+  }
+
+  async toggleReaction(messageId: number, emojiCode: string) {
+    const myId = this.currentUserId();
+    if (!myId) return false;
+    const alreadyReacted = this.reactions().some(reaction =>
+      reaction.message_id === messageId &&
+      reaction.user_id === myId &&
+      reaction.emoji_code === emojiCode);
+    if (alreadyReacted) {
+      return this.removeReaction(messageId, emojiCode);
+    }
+    else {
+      return this.addReaction(messageId, emojiCode);
+    }
+  }
 
 }
