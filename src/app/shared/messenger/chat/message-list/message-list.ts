@@ -33,6 +33,12 @@ export class MessageList {
   state = inject(MessageListState);
 
   /**
+   * previousDate = Datum, mit dem die erste Nachricht verglichen wird (Thread: Datum der Hauptnachricht), Start: null.
+   * Bei null (Main-Chat) bekommt die erste Nachricht immer einen Trenner.
+   */
+  previousDate = input<string | Date | null>(null);
+
+  /**
    * Prüft, ob die Nachricht an Position index an einem neuen Tag liegt.
    * DE: Gibt true zurück, wenn vor dieser Nachricht ein Datums-Trenner angezeigt werden soll.
    * EN: Returns true if a date separator should be shown before this message.
@@ -42,12 +48,14 @@ export class MessageList {
   isNewDay(index: number): boolean {
     /** hole alle Nachrichten dieser Liste */
     const messages = this.messages();
-    /** erste Nachricht bekommt immer einen Trenner */
-    if (index === 0) return true;
+    /** previousDate = Vergleichsdatum für die erste Nachricht */
+    const previousDate = this.previousDate();
+    /** wenn (erste Nachricht und kein Vergleichsdatum) dann bekommt sie immer einen Trenner */
+    if (index === 0 && previousDate === null) return true;
     /** Datum der aktuellen Nachricht ohne Uhrzeit */
     const current = new Date(messages[index].created_at).toDateString();
-    /** Datum der vorherigen Nachricht ohne Uhrzeit */
-    const previous = new Date(messages[index - 1].created_at).toDateString();
+    /** Datum davor ohne Uhrzeit: bei der ersten Nachricht previousDate, sonst die vorherige Nachricht */
+    const previous = new Date(index === 0 ? previousDate! : messages[index - 1].created_at).toDateString();
     /** neuer Tag, wenn die beiden Daten verschieden sind */
     return current !== previous;
   }

@@ -22,7 +22,7 @@ header {
 }
 
 .logo {
-    flex: 3;
+    flex: 0 0 clamp(250px, 20%, 366px);
 
     >a {
         padding: 0;
@@ -104,18 +104,18 @@ header {
 
     >nav {
         display: flex;
-        flex: 3;
+        flex: 0 0 clamp(250px, 20%, 366px);
     }
 
     >main {
         display: flex;
-        flex: 8;
+        flex: 1;
         min-width: 0;
     }
 
     >aside {
         display: flex;
-        flex: 4;
+        flex: 0 0 clamp(300px, 26%, 485px);
     }
 }
 

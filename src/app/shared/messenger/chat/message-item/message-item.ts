@@ -7,6 +7,7 @@ import { Emoji } from '../../../interfaces/emoji';
 import { ReactionGroup } from '../../../interfaces/reaction';
 import { getEmojiPath } from '../../../emojis';
 import { EmojiPicker } from '../../emoji-picker/emoji-picker';
+import { ChatState } from '../../../../chat-state';
 import { MessageListState } from '../message-list/message-list-state';
 
 /**
@@ -26,10 +27,15 @@ export class MessageItem {
   supabase = inject(Supabase);
   /** state = gemeinsamer Zustand der Liste, in der diese Nachricht steht */
   state = inject(MessageListState);
+  /** chatState = geteilter Chat-Zustand (für Threads) */
+  chatState = inject(ChatState);
 
   /** message = die Nachricht, die angezeigt wird (Pflicht-Input von MessageList) */
   message = input.required<Message>();
 
+  /** inThread = ob die Nachricht oben im Thread als Hauptnachricht steht, Start: false */
+  inThread = input(false);
+  
   /** showProfile = Event an MessageList: "zeige das Profil von diesem User" (wird bis zu main-chat weitergereicht) */
   showProfile = output<User>();
 
@@ -55,7 +61,17 @@ export class MessageItem {
 
   /** isAnyEditing = ob irgendeine Nachricht der Liste gerade bearbeitet wird (dann Reaktions-Leisten ausblenden) */
   isAnyEditing = computed(() => this.state.editMessageId() !== null);
+  /** replies = Antworten auf diese Nachricht */
 
+  replies = computed(() => {
+    /** messageId = ID dieser Nachricht */
+    const messageId = this.message().id;
+    /** gib zurück: filtere messages, behalte Nachricht, wenn (parent_id ist gleich messageId) */
+    return this.supabase.messages().filter(message => message.parent_id === messageId);
+  });
+
+  /** lastReply = neueste Antwort, sonst null */
+  lastReply = computed(() => this.replies().at(-1) ?? null);
   /**
    * Die zwei zuletzt von mir genutzten Emojis für die Reaktions-Leiste, aufgefüllt mit ✅ und 👍.
    * The two emojis I used most recently for the reaction bar, filled up with ✅ and 👍.
@@ -187,10 +203,16 @@ export class MessageItem {
     const list = button.closest('.messages-wrapper');
     /** listTop = oberer Rand der Liste im Fenster, wenn keine Liste gefunden dann 0 */
     const listTop = list ? list.getBoundingClientRect().top : 0;
+    /** listBottom = unterer Rand der Liste im Fenster, wenn keine Liste gefunden dann unterer Fensterrand */
+    const listBottom = list ? list.getBoundingClientRect().bottom : window.innerHeight;
+    /** buttonRect = Position vom Button im Fenster */
+    const buttonRect = button.getBoundingClientRect();
     /** spaceAbove = Platz zwischen oberem Rand der Liste und Button */
-    const spaceAbove = button.getBoundingClientRect().top - listTop;
-    /** reactionPickerBelow = wenn (Platz oben kleiner als 250px) dann true, sonst false */
-    this.state.reactionPickerBelow.set(spaceAbove < 250);
+    const spaceAbove = buttonRect.top - listTop;
+    /** spaceBelow = Platz zwischen Button und unterem Rand der Liste */
+    const spaceBelow = listBottom - buttonRect.bottom;
+    /** reactionPickerBelow = wenn (oben weniger als 250px) und (unten mehr Platz als oben) dann true, sonst false */
+    this.state.reactionPickerBelow.set(spaceAbove < 250 && spaceBelow > spaceAbove);
     /** alreadyOpen = ob der Picker dieser Nachricht an genau dieser Stelle schon offen ist */
     const alreadyOpen = this.state.isReactionPickerOpen(messageId, source);
     /** reactionPickerSource = source (merken, wo der Picker aufgehen soll) */

@@ -27,6 +27,15 @@
         </div>
 
         <p class="message-content">{{ msg.content }}</p>
+        @if (!inThread() && lastReply(); as last) {
+        <div class="thread-info-wrapper">
+            <button type="button" class="thread-info" (click)="chatState.openThread(msg.id)">
+                <span class="thread-count">{{ replies().length }} {{ replies().length === 1 ? 'Antwort' : 'Antworten'
+                    }}</span>
+            </button>
+            <span class="thread-time">Letzte Antwort {{ last.created_at | date:'HH:mm' }}</span>
+        </div>
+        }
         <div class="reactions">
             @if (reactionGroups().length > 0) {
             <button type="button" class="reaction-emoji" aria-label="Reaktion hinzufügen"
@@ -50,6 +59,7 @@
                 [class.open-below]="state.reactionPickerBelow()" (emojiSelected)="addReactionFromPicker($event)" />
             }
         </div>
+
     </div>
     }
     @if (!isAnyEditing()) {
@@ -62,7 +72,9 @@
         }
         <button type="button" class="reaction-emoji" aria-label="Reaktion hinzufügen"
             (click)="toggleReactionPicker($event); $event.stopPropagation()"></button>
-        <button class="reaction-answer"></button>
+        @if (msg.parent_id === null && !inThread()) {
+        <button class="reaction-answer" (click)="chatState.openThread(msg.id)"></button>
+        }
         @if (isOwn()) {
         <button class="reaction-options" (click)="toggleOptions(); $event.stopPropagation()"></button>
         }

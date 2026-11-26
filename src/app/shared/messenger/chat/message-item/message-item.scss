@@ -99,6 +99,10 @@
         left: 45px;
         right: auto;
     }
+
+    .thread-info-wrapper {
+        flex-direction: row-reverse;
+    }
 }
 
 .message-top {
@@ -378,4 +382,40 @@
     left: auto;
     right: 50%;
     border-radius: 30px 30px 0 30px;
+}
+
+:host-context(app-threads) .edit-message {
+    left: 0;
+    top: 48px;
+
+    >button {
+        font-size: 1.125rem;
+    }
+}
+
+:host-context(app-threads) .reaction-recent {
+    display: none;
+}
+
+:host-context(app-threads) .reactions {
+    position: static;
+}
+
+.thread-info {
+    background-color: transparent;
+    color: var(--purple3);
+    font-size: 1.125rem;
+    font-weight: 400;
+    padding: 0;
+}
+
+.thread-time {
+    color: var(--text-grey);
+    font-size: 0.875rem;
+}
+
+.thread-info-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 20px;
 }

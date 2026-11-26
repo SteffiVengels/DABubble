@@ -781,7 +781,7 @@ export class Supabase {
    * @param conversationId - ID vom Gespräch oder `null` bei einer Channel-Nachricht. / ID of the conversation, or `null` for a channel message.
    * @returns `true`, wenn die Nachricht gespeichert wurde, sonst `false`. / `true` if the message was saved, otherwise `false`.
    */
-  async addMessage(content: string, channelId: number | null, conversationId: number | null) {
+  async addMessage(content: string, channelId: number | null, conversationId: number | null, parentId: number | null = null) {
     /** myId = ID vom eingeloggten User */
     const myId = this.currentUserId();
     /** wenn (kein User eingeloggt) dann gib false zurück */
@@ -798,6 +798,8 @@ export class Supabase {
         channel_id: channelId,
         /** conversation_id = Gesprächs-ID oder null */
         conversation_id: conversationId,
+        /** parent_id = ID der Hauptnachricht oder null */
+        parent_id: parentId,
       });
     /** wenn (error ist vorhanden) dann */
     if (error) {

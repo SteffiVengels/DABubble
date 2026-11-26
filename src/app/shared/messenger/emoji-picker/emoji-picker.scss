@@ -52,6 +52,38 @@
     border-radius: 30px 0 30px 30px;
 }
 
+:host-context(app-threads) section {
+    grid-template-columns: repeat(6, 1fr);
+}
+
+:host-context(app-threads).in-reaction-bar {
+    position: static;
+}
+
+:host-context(app-threads).in-reaction-bar section {
+    bottom: calc(100% + 4px);
+    left: 0;
+}
+
+:host-context(app-threads).in-reaction-bar.align-right section {
+    left: auto;
+    right: 0;
+}
+
+:host-context(app-threads).in-reaction-bar.open-below section {
+    bottom: auto;
+    top: calc(100% + 4px);
+}
+
+:host-context(app-threads).in-reactions section {
+    left: 45px;
+}
+
+:host-context(app-threads).in-reactions.align-right section {
+    left: auto;
+    right: 45px;
+}
+
 section {
     position: absolute;
     bottom: 140px;

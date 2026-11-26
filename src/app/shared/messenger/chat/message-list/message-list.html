@@ -1,5 +1,6 @@
 <div class="messages-wrapper custom-scrollbar">
     <div class="message-scrollbar">
+        <ng-content select="[listHeader]" />
         @for (message of messages(); track message.id; let i = $index) {
         @if (isNewDay(i)) {
         <div class="date-separator">

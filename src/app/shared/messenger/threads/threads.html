@@ -1,1 +1,30 @@
-<p>threads works!</p>
+@if (chatState.threadParent(); as parent) {
+
+<div class="thread-header">
+    <div class="thread-title">
+        <h2>Thread</h2>
+        @if (chatState.activeChannel(); as channel) {
+        <span># {{ channel.name }}</span>
+        } @else if (chatState.activeDirectMessageUser(); as user) {
+        <span>@ {{ user.name }}</span>
+        }
+    </div>
+    <button type="button" class="close-button" aria-label="Thread schließen" (click)="chatState.closeThread()"></button>
+</div>
+
+<app-message-list [messages]="chatState.threadReplies()" [previousDate]="parent.created_at"
+    (showProfile)="showProfile.emit($event)">
+    <div listHeader>
+        <app-message-item [message]="parent" [inThread]="true" (showProfile)="showProfile.emit($event)" />
+
+        <div class="thread-divider">
+            <span>{{ chatState.threadReplies().length }} {{ chatState.threadReplies().length === 1 ? 'Antwort' :
+                'Antworten' }}</span>
+            <span class="divider"></span>
+        </div>
+    </div>
+</app-message-list>
+
+<app-message-input placeholder="Antworten..." [sendMessage]="sendReply" />
+
+}

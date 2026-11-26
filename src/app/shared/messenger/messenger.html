@@ -42,9 +42,11 @@
     </nav>
     }
     <main><app-main-chat (showProfile)="showUserProfile($event)"></app-main-chat></main>
+    @if (chatState.activeThreadId()) {
     <aside>
-        <app-threads></app-threads>
+        <app-threads (showProfile)="showUserProfile($event)"></app-threads>
     </aside>
+    }
 </section>
 
 <app-user-profile-dialog (messageClick)="openMessage($event)" />

@@ -28,11 +28,34 @@ export class ChatState {
 
   /** activeChat = Signal mit dem aktuell offenen Chat, Start: null (kein Chat offen) */
   activeChat = signal<ActiveChat | null>({ type: 'channel', channelId: 1 });
+
   /** previousChat = Signal mit dem zuletzt offenen Chat, Start: null */
   previousChat = signal<ActiveChat | null>(null);
 
+  activeThreadId = signal<number | null>(null);
+
   /** activeChatType = Typ vom aktiven Chat ('channel' / 'directMessage'), sonst null */
   activeChatType = computed(() => this.activeChat()?.type ?? null);
+
+  /** threadParent = Hauptnachricht vom offenen Thread, sonst null */
+  threadParent = computed(() => {
+    /** id = ID der Hauptnachricht vom offenen Thread */
+    const id = this.activeThreadId();
+    /** wenn (kein Thread offen) dann gib null zurück */
+    if (id === null) return null;
+    /** gib zurück: suche in messages die Nachricht mit (id ist gleich Thread-ID), sonst null */
+    return this.supabase.messages().find(message => message.id === id) ?? null;
+  });
+
+  /** threadReplies = Antworten vom offenen Thread */
+  threadReplies = computed(() => {
+    /** id = ID der Hauptnachricht vom offenen Thread */
+    const id = this.activeThreadId();
+    /** wenn (kein Thread offen) dann gib leere Liste zurück */
+    if (id === null) return [];
+    /** gib zurück: filtere messages, behalte Nachricht, wenn (parent_id ist gleich Thread-ID) */
+    return this.supabase.messages().filter(message => message.parent_id === id);
+  });
 
   /** activeChannel = suche in channels den Channel mit (channel.id ist gleich aktiver channelId), sonst null */
   activeChannel = computed(() => {
@@ -95,6 +118,14 @@ export class ChatState {
     this.openChat({ type: 'channel', channelId });
   }
 
+  openThread(messageId: number) {
+    this.activeThreadId.set(messageId);
+  }
+
+  closeThread() {
+    this.activeThreadId.set(null);
+  }
+
   /**
    * Öffnet eine Direktnachricht mit einem User.
    * Opens a direct message with a user.
@@ -132,6 +163,8 @@ export class ChatState {
     this.previousChat.set(current);
     /** activeChat = neuer Chat */
     this.activeChat.set(chat);
+    /** Thread schließen (gehört zum alten Chat) */
+    this.closeThread();
   }
 
   /**
