@@ -4,7 +4,6 @@
 @use '../profile-details';
 
 :host {
-    // Host-Element soll im Layout keinen Platz einnehmen (sonst zusätzlicher Flex-Gap)
     display: contents;
 }
 

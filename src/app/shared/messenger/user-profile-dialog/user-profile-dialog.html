@@ -1,0 +1,35 @@
+<dialog #dialog class="profile-menu centered" (click)="closeOnBackdrop($event)">
+    <div class="overlay-profil details">
+        <div class="profile-details-top">
+            <p>Profil</p>
+            <button class="close-button" (click)="close()"></button>
+        </div>
+        @if (selectedUser(); as user) {
+        <div class="profile-details-img-wrapper">
+            <img class="profile-details-img" [src]="user.avatar" alt="Profilbild">
+        </div>
+        <div class="gap-15">
+            <div class="profile-details-middle space-between">
+                <p class="profile-details-name">{{ user.name }}</p>
+            </div>
+            <div class="profile-details-middle">
+                <div class="status" [class.online]="supabase.isOnline(user.id)"></div>
+                <p class="status-text" [class.online-text]="supabase.isOnline(user.id)">
+                    {{ supabase.isOnline(user.id) ? 'Aktiv' : 'Abwesend' }}
+                </p>
+            </div>
+        </div>
+        <div class="profile-details-mail gap-15">
+            <div>
+                <img src="/img/icons/mail2.png" alt="">
+                <p>E-Mail-Adresse</p>
+            </div>
+            <a href="mailto:{{ user.email }}">{{ user.email }}</a>
+        </div>
+
+        <div class="profile-message">
+            <button (click)="messageClick.emit(user.id)"><span class="comment-icon"></span>Nachricht</button>
+        </div>
+        }
+    </div>
+</dialog>

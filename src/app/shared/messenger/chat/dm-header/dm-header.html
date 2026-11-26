@@ -1,0 +1,12 @@
+@let partner = user();
+<div class="chat-head">
+    <div class="panel-anchor">
+        <button class="direct-message active" (click)="showProfile.emit(partner)">
+            <div class="profile-img">
+                <img [src]="partner.avatar" alt="Profilbild">
+                <div class="status" [class.online]="supabase.isOnline(partner.id)"></div>
+            </div>
+            <p>{{ partner.name }} @if (partner.id === supabase.currentUserId()) { <span>(Du)</span> }</p>
+        </button>
+    </div>
+</div>

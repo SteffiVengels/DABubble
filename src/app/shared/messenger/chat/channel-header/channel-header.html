@@ -1,0 +1,165 @@
+@if (openPanel()) {
+<div class="panel-backdrop" (click)="openPanel.set(null)"></div>
+}
+<div class="chat-head">
+    <div class="panel-anchor">
+        <button class="edit-channel" (click)="openPanel.set('editChannel')">
+            <span class="hashtag-icon"></span> {{ channel().name }}
+            <span class="arrow-down"></span>
+        </button>
+        @if (openPanel() === 'editChannel') {
+        <div class="panel edit-channel-panel">
+            <div class="edit-channel-inner">
+                <div class="edit-channel-head">
+                    <p><span class="hashtag-icon"></span>{{ channel().name }}</p>
+                    <button class="close-button" (click)="openPanel.set(null)"></button>
+                </div>
+                <div class="edit-channel-fields" [class.editing]="editingChannelName()">
+                    <div class="edit-channel-top">
+                        <p>Channel-Name</p>
+                        @if (editingChannelName()) {
+                        <button (click)="saveChannelName()">Speichern</button>
+                        } @else {
+                        <button
+                            (click)="channelNameInput.set(channel().name); editingChannelName.set(true)">Bearbeiten</button>
+                        }
+                    </div>
+                    @if (editingChannelName()) {
+                    <div class="input">
+                        <span class="hashtag-icon"></span>
+                        <input type="text" [value]="channelNameInput()"
+                            (input)="channelNameInput.set($any($event.target).value)">
+                    </div>
+                    } @else {
+                    <p><span class="hashtag-icon"></span>{{ channel().name }}</p>
+                    }
+                </div>
+                <div class="edit-channel-fields" [class.editing]="editingChannelDescription()">
+                    <div class="edit-channel-top">
+                        <p>Beschreibung</p>
+                        @if (editingChannelDescription()) {
+                        <button (click)="saveChannelDescription()">Speichern</button>
+                        } @else {
+                        <button
+                            (click)="channelDescriptionInput.set(channel().description ?? ''); editingChannelDescription.set(true)">Bearbeiten</button>
+                        }
+                    </div>
+                    @if (editingChannelDescription()) {
+                    <div class="input">
+                        <input type="text" [value]="channelDescriptionInput()"
+                            (input)="channelDescriptionInput.set($any($event.target).value)">
+                    </div>
+                    } @else {
+                    <p>
+                        {{ channel().description }}
+                    </p>
+                    }
+
+                    <div class="line"></div>
+                    <div class="edit-channel-bottom">
+                        <p>Erstellt von</p>
+                        <span>{{ getUserName(channel().created_by) }}</span>
+                    </div>
+                </div>
+                <div class="edit-channel-leave">
+                    <button (click)="leaveChannel()">Channel verlassen</button>
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+    <div class="members">
+        <div class="panel-anchor">
+            <button class="show-members" (click)="openPanel.set('showMembers')">
+                <div class="show-members-wrapper">
+                    @for (user of channelMembers(); track user.id) {
+                    <img class="avatar" [src]="user.avatar" alt="Profilbild">
+                    }
+                </div>
+                <p>{{ channelMembers().length }}</p>
+            </button>
+            @if (openPanel() === 'showMembers') {
+            <div class="panel show-members-panel">
+                <div class="panel-inner">
+                    <div class="panel-head">
+                        <p>Mitglieder</p>
+                        <button class="close-button" (click)="openPanel.set(null)"></button>
+                    </div>
+                    <div class="channel-users-scroll-area custom-scrollbar">
+                        <div class="channel-users">
+                            @for (user of channelMembers(); track user.id) {
+                            <button class="show-profile" (click)="showProfile.emit(user)">
+                                <div class="profile-img">
+                                    <img [src]="user.avatar" alt="Profilbild">
+                                    <div class="status" [class.online]="supabase.isOnline(user.id)"></div>
+                                </div>
+                                <p>{{ user.name }} @if (user.id === supabase.currentUserId()) { <span>(Du)</span> }</p>
+                            </button>
+                            }
+                            <button class="add-members-button" (click)="openPanel.set('addMembers')"><span
+                                    class="add-members-icon"></span>Mitglieder
+                                hinzufügen</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            }
+        </div>
+        <div class="panel-anchor">
+            <button class="add-members" (click)="openPanel.set('addMembers')">
+            </button>
+            @if (openPanel() === 'addMembers') {
+            <div class="panel add-members-panel">
+                <div class="panel-inner">
+                    <div>
+                        <div class="panel-head">
+                            <p>Leute hinzufügen</p>
+                            <button class="close-button" (click)="openPanel.set(null)"></button>
+                        </div>
+                        <p class="channel-name-add-members">
+                            <span class="hashtag-icon-small-purple"></span>
+                            {{ channel().name }}
+                        </p>
+                    </div>
+                    <div class="search-field">
+                        <div class="input-fields">
+                            <label class="d_none" for="member-search">Name</label>
+                            <div class="input">
+                                @for (user of selectedUsers(); track user.id) {
+                                <span class="chip">
+                                    <img [src]="user.avatar" alt="">
+                                    {{ user.name }}
+                                    <button type="button" class="chip-remove" (click)="removeUser(user)"
+                                        [attr.aria-label]="user.name + ' entfernen'"></button>
+                                </span>
+                                }
+                                <input type="text" id="member-search" placeholder="Name eingeben" autocomplete="off"
+                                    [value]="memberSearch()" (input)="onMemberSearch($event)">
+                            </div>
+                        </div>
+                        @if (memberSearch()) {
+                        <div class="search-result">
+                            <div class="search-result-scroll-area custom-scrollbar">
+                                @for (user of filteredUsers(); track user.id) {
+                                <button type="button" class="direct-message" (click)="addUser(user)">
+                                    <div class="profile-img">
+                                        <img [src]="user.avatar" alt="Profilbild">
+                                        <div class="status" [class.online]="supabase.isOnline(user.id)"></div>
+                                    </div>
+                                    <p>{{ user.name }}</p>
+                                </button>
+                                } @empty {
+                                <p class="no-result">Keine Person gefunden</p>
+                                }
+                            </div>
+                        </div>
+                        }
+                    </div>
+                    <div class="add-button">
+                        <button [disabled]="isSaving()" (click)="addUsersToChannel()">Hinzufügen</button>
+                    </div>
+                </div>
+            </div>
+            }
+        </div>
+    </div>

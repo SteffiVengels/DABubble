@@ -1,0 +1,81 @@
+@use '../../reaction-icon';
+
+:host {
+    display: flex;
+    flex-direction: column;
+    padding: 45px;
+}
+
+.input-wrapper {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--light-purple);
+    border-radius: 20px;
+    padding: 20px;
+
+    >textarea {
+        border: none;
+        outline: none;
+        resize: none;
+        font-size: 1.125rem;
+        font-family: 'Nunito';
+    }
+
+    &:hover {
+        border-color: var(--purple2);
+    }
+
+    &:focus-within {
+        border-color: var(--purple3);
+    }
+}
+
+.message-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    button {
+        background-color: transparent;
+        padding: 0;
+        border-radius: 20px;
+    }
+}
+
+.send-button {
+    background-image: url('/img/icons/send_icon.png');
+    width: 40px;
+    height: 40px;
+    background-size: cover;
+    background-repeat: no-repeat;
+
+    &:hover {
+        background-image: url('/img/icons/send_icon_hover.png');
+    }
+}
+
+.at-icon {
+    background-image: url('/img/icons/alternate_email.png');
+    width: 40px;
+    height: 40px;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-size: 24px 24px;
+    background-position: center;
+
+    &:hover {
+        background-image: url('/img/icons/alternate_email_hover2.png') !important;
+        background-color: var(--bg-color) !important;
+    }
+}
+
+.message-buttons-wrapper {
+
+    &:hover .reaction-icon {
+        background-image: url('/img/icons/sentiment_satisfied_hover.png');
+    }
+
+    &:hover .at-icon {
+        background-image: url('/img/icons/alternate_email_hover.png');
+    }
+}

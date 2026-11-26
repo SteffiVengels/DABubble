@@ -1,0 +1,78 @@
+@let msg = message();
+<div [class]="isOwn() ? 'message-own' : 'message'" [class.options-open]="state.openOptionsId() === msg.id"
+    [class.picker-open]="state.isReactionPickerOpen(msg.id, 'bar')">
+    <img [src]="sender()?.avatar" alt="Profilbild">
+    @if (isEditing()) {
+    <div class="change-message">
+        <textarea [value]="editMessageInput()" (input)="editMessageInput.set($any($event.target).value)"></textarea>
+        <div class="change-message-buttons">
+            <div class="change-message-emoji">
+                <button type="button" class="reaction-icon" aria-label="Emoji einfügen"
+                    (click)="toggleEditEmojiPicker(); $event.stopPropagation()"></button>
+                @if (state.editEmojiPickerOpen()) {
+                <app-emoji-picker class="in-edit" (emojiSelected)="addEmojiToEdit($event)" />
+                }
+            </div>
+            <div class="change-message-actions">
+                <button class="secondary" (click)="cancelEditMessage()">Abbrechen</button>
+                <button (click)="saveEditMessage()">Speichern</button>
+            </div>
+        </div>
+    </div>
+    } @else {
+    <div class="message-body">
+        <div class="message-top">
+            <button type="button" class="message-name" (click)="openSenderProfile()">{{ sender()?.name }}</button>
+            <p class="message-time">{{ msg.created_at | date:'HH:mm' }} Uhr</p>
+        </div>
+
+        <p class="message-content">{{ msg.content }}</p>
+        <div class="reactions">
+            @if (reactionGroups().length > 0) {
+            <button type="button" class="reaction-emoji" aria-label="Reaktion hinzufügen"
+                (click)="toggleReactionPicker($event, 'reactions'); $event.stopPropagation()"></button>
+            }
+            @for (group of reactionGroups(); track group.code) {
+            <button type="button" class="reaction-chip" [class.own]="group.reactedByMe"
+                (click)="supabase.toggleReaction(msg.id, group.code)">
+                <img [src]="getEmojiPath(group.code)" alt="">
+                <span>{{ group.count }}</span>
+                <span class="reaction-tooltip">
+                    <img [src]="getEmojiPath(group.code)" alt="">
+                    <span class="reaction-tooltip-names">{{ getReactionNames(group) }}</span>
+                    <span>{{ getReactionVerb(group) }}</span>
+                </span>
+            </button>
+            }
+
+            @if (state.isReactionPickerOpen(msg.id, 'reactions')) {
+            <app-emoji-picker class="in-reactions" [class.align-right]="isOwn()"
+                [class.open-below]="state.reactionPickerBelow()" (emojiSelected)="addReactionFromPicker($event)" />
+            }
+        </div>
+    </div>
+    }
+    @if (!isAnyEditing()) {
+    <div class="reaction-bar">
+        @for (code of recentEmojis(); track code) {
+        <button type="button" class="reaction-recent" aria-label="Mit Emoji reagieren"
+            (click)="supabase.toggleReaction(msg.id, code); $event.stopPropagation()">
+            <img [src]="getEmojiPath(code)" alt="">
+        </button>
+        }
+        <button type="button" class="reaction-emoji" aria-label="Reaktion hinzufügen"
+            (click)="toggleReactionPicker($event); $event.stopPropagation()"></button>
+        <button class="reaction-answer"></button>
+        @if (isOwn()) {
+        <button class="reaction-options" (click)="toggleOptions(); $event.stopPropagation()"></button>
+        }
+        <div class="edit-message" [class.open]="state.openOptionsId() === msg.id">
+            <button (click)="showEditMessage()">Nachricht bearbeiten</button>
+        </div>
+        @if (state.isReactionPickerOpen(msg.id, 'bar')) {
+        <app-emoji-picker class="in-reaction-bar" [class.align-right]="!isOwn()"
+            [class.open-below]="state.reactionPickerBelow()" (emojiSelected)="addReactionFromPicker($event)" />
+        }
+    </div>
+    }
+</div>

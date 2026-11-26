@@ -1,0 +1,38 @@
+@use '../../scrollbar';
+
+:host {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    min-height: 0;
+}
+
+.messages-wrapper {
+    display: flex;
+    flex-direction: column-reverse;
+    flex-grow: 1;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+.message-scrollbar {
+    display: flex;
+    flex-direction: column;
+}
+
+.date-separator {
+    display: flex;
+    align-items: center;
+
+    >span {
+        padding: 5px 15px;
+        border-radius: 30px;
+        border: 1px solid var(--light-purple);
+    }
+}
+
+.divider {
+    height: 1px;
+    flex: 1;
+    background-color: var(--light-purple);
+}

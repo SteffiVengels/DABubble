@@ -1,0 +1,16 @@
+<div class="messages-wrapper custom-scrollbar">
+    <div class="message-scrollbar">
+        @for (message of messages(); track message.id; let i = $index) {
+        @if (isNewDay(i)) {
+        <div class="date-separator">
+            <div class="divider"></div>
+            <span>{{ getDateLabel(message.created_at) }}</span>
+            <div class="divider"></div>
+        </div>
+        }
+        <app-message-item [message]="message" (showProfile)="showProfile.emit($event)" />
+        } @empty {
+        <ng-content />
+        }
+    </div>
+</div>

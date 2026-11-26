@@ -1,19 +1,16 @@
-// Schmale lila Scrollbar – zusätzlich zur Klasse des scrollenden Elements setzen
-// genutzt in: workspace-menu (.scroll-area), main-chat + create-channel-dialog (.search-result-scroll-area), main-chat (.channel-users-scroll-area)
-
 .custom-scrollbar::-webkit-scrollbar {
-    width: 8px; // ohne diese Regel wird die Farbe ignoriert
+    width: 8px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-    background: transparent; // Schiene (Hintergrund)
+    background: transparent;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-    background-color: var(--bg-color); // der Balken, den man zieht
+    background-color: var(--bg-color);
     border-radius: 4px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background-color: var(--purple2); // optional: Farbe beim Hover
+    background-color: var(--purple2);
 }

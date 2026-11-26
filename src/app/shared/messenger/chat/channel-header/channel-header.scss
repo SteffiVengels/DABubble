@@ -1,0 +1,375 @@
+@use '../../user-status';
+@use '../../close-button';
+@use '../../member-search';
+@use '../../scrollbar';
+@use '../../chat-head';
+@use '../../hashtag-icon';
+
+:host {
+    display: block;
+}
+
+.add-members {
+    display: flex;
+    background-color: transparent;
+    width: 40px;
+    height: 40px;
+    background-image: url('/img/icons/add_person.png');
+    background-repeat: no-repeat;
+    padding: 0;
+
+    &:hover {
+        background-image: url('/img/icons/add_person_hover.png');
+    }
+}
+
+.edit-channel {
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    color: black;
+    font-family: 'Nunito';
+    font-weight: 700;
+    font-size: 1.5rem;
+    gap: 10px;
+    padding: 6px 10px;
+
+    &:hover .hashtag-icon {
+        background-image: url('/img/icons/tag_big_hover.png');
+    }
+
+    &:hover {
+        color: var(--purple3);
+        background-color: var(--bg-color);
+    }
+
+    &:hover .arrow-down {
+        background-image: url('/img/icons/keyboard_arrow_down_hover.png');
+    }
+
+    &:active {
+        color: black;
+        background-color: transparent;
+    }
+
+    &:active .hashtag-icon {
+        background-image: url('/img/icons/tag_big.png');
+    }
+
+    &:active .arrow-down {
+        background-image: url('/img/icons/keyboard_arrow_down.png');
+    }
+}
+
+.arrow-down {
+    display: flex;
+    width: 30px;
+    height: 30px;
+    background-image: url('/img/icons/keyboard_arrow_down.png');
+}
+
+.members {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.show-members {
+    display: flex;
+    align-items: center;
+    background-color: transparent;
+    padding: 0;
+    color: black;
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-family: 'Nunito';
+    gap: 10px;
+    border-radius: 30px;
+    padding: 3px 10px;
+
+    &:hover {
+        background-color: var(--bg-color);
+        color: var(--purple3);
+
+    }
+}
+
+.show-members-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.avatar {
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    border: 2px white solid;
+}
+
+.avatar:not(:first-child) {
+    margin-left: -14px;
+}
+
+.panel-anchor {
+    position: relative;
+}
+
+.panel-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.panel {
+    position: absolute;
+    top: 48px;
+    right: 0;
+    z-index: 11;
+    background-color: white;
+    border-radius: 30px 0 30px 30px;
+    box-shadow: 0px 6px 10px 0 rgba(0, 0, 0, 0.2);
+}
+
+.edit-channel-panel {
+    right: auto;
+    left: 0;
+    width: 880px;
+    border-radius: 0 30px 30px 30px;
+}
+
+.show-members-panel {
+    width: 420px;
+}
+
+.add-members-panel {
+    width: 520px;
+}
+
+.panel-inner {
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.edit-channel-inner {
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.edit-channel-head {
+    display: flex;
+    justify-content: space-between;
+
+    >p {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        font-weight: 700;
+        font-size: 1.5rem;
+    }
+}
+
+.edit-channel-fields {
+    display: flex;
+    flex-direction: column;
+    border-radius: 20px;
+    border: 1px solid var(--light-purple);
+    padding: 20px;
+    gap: 20px;
+    transition: border-color 0.2s, padding 0.2s;
+
+    &.editing {
+        border-color: transparent;
+        padding: 20px 0;
+    }
+
+    >p {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+}
+
+.input {
+
+    input {
+        border: none;
+        outline: none;
+        flex: 1;
+        font-size: 1.125rem;
+        font-family: 'Nunito';
+    }
+}
+
+.edit-channel-top {
+    display: flex;
+    justify-content: space-between;
+
+    >p {
+        font-weight: 700;
+    }
+
+    >button {
+        font-family: 'Nunito';
+        padding: 0;
+        background-color: transparent;
+        color: var(--purple3);
+        font-weight: 600;
+        font-size: 1.125rem;
+
+        &:hover {
+            font-weight: 700;
+        }
+    }
+}
+
+.line {
+    background-color: var(--light-purple);
+    height: 1px;
+    width: 100%;
+}
+
+.edit-channel-bottom {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    >p {
+        font-weight: 700;
+    }
+
+    >span {
+        font-size: 1.5rem;
+        color: var(--purple3);
+    }
+}
+
+.edit-channel-leave {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.hashtag-icon-small {
+    display: flex;
+    background-image: url('/img/icons/tag.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+}
+
+.show-profile {
+    background-color: transparent;
+    color: black;
+    font-weight: 400;
+    font-size: 1.125rem;
+    font-family: 'Nunito';
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 4px 20px;
+    border-radius: 30px;
+    width: fit-content;
+
+    &:hover {
+        background-color: var(--bg-color);
+    }
+
+    &:active {
+        color: var(--purple3);
+        font-weight: 700;
+    }
+
+    >p {
+        text-align: left;
+    }
+}
+
+.channel-users-scroll-area {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.channel-users {
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+}
+
+.add-members-button {
+    display: flex;
+    align-items: center;
+    background-color: transparent;
+    color: black;
+    gap: 15px;
+    padding: 12px 30px;
+    border-radius: 100px;
+    font-size: 1.125rem;
+    font-family: 'Nunito';
+    font-weight: 400;
+    width: fit-content;
+
+    &:hover {
+        background-color: var(--bg-color);
+        color: var(--purple3);
+    }
+
+    &:hover .add-members-icon {
+        background-image: url('/img/icons/add_person_hover.png');
+    }
+
+    &:active {
+        background-color: transparent;
+        color: black;
+    }
+
+    &:active .add-members-icon {
+        background-image: url('/img/icons/add_person_click.png');
+    }
+}
+
+.add-members-icon {
+    display: flex;
+    background-color: transparent;
+    width: 32px;
+    height: 32px;
+    background-image: url('/img/icons/add_person.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    padding: 0;
+}
+
+.channel-name-add-members {
+    margin-top: 5px;
+    display: flex;
+    gap: 15px;
+    color: var(--purple2);
+}
+
+.hashtag-icon-small-purple {
+    display: flex;
+    background-image: url('/img/icons/tag_hover2.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+}
+
+.add-button {
+    display: flex;
+    justify-content: flex-end;
+}

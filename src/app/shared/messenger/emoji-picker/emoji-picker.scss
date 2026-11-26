@@ -7,52 +7,47 @@
     left: -120px;
 }
 
-// fremde Nachricht: Bar steht rechts → Picker am rechten Rand ausrichten, geht nach links auf
 :host(.in-reaction-bar.align-right) section {
     left: auto;
     right: 40px;
     border-radius: 30px 30px 0 30px;
 }
 
-// oben zu wenig Platz → Picker geht unter der Bar auf
 :host(.in-reaction-bar.open-below) section {
     bottom: auto;
     top: 48px;
     border-radius: 0 30px 30px 30px;
 }
 
-// fremde Nachricht + unten: Ecke oben rechts eckig
 :host(.in-reaction-bar.align-right.open-below) section {
     border-radius: 30px 0 30px 30px;
 }
 
-// Picker unter der Nachricht: Host ohne eigene Position → section richtet sich nach der .reactions-Box
-// (dadurch wandert der Picker nicht mit, egal wie viele Reaktionen es gibt)
+:host(.in-edit) section {
+    left: -40px;
+}
+
 :host(.in-reactions) {
     position: static;
 }
 
-// fremde Nachricht: Button steht ganz links → Picker an der linken Kante der Box, geht nach rechts auf
 :host(.in-reactions) section {
     bottom: calc(100% + 8px);
     left: 0;
 }
 
-// eigene Nachricht: Button steht ganz rechts (row-reverse) → Picker an der rechten Kante der Box, geht nach links auf
 :host(.in-reactions.align-right) section {
     left: auto;
     right: 0;
     border-radius: 30px 30px 0 30px;
 }
 
-// oben zu wenig Platz → Picker geht unter den Chips auf
 :host(.in-reactions.open-below) section {
     bottom: auto;
     top: calc(100% + 8px);
     border-radius: 0 30px 30px 30px;
 }
 
-// eigene Nachricht + unten: Ecke oben rechts eckig
 :host(.in-reactions.align-right.open-below) section {
     border-radius: 30px 0 30px 30px;
 }

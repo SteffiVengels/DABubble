@@ -68,11 +68,6 @@ input:focus {
     justify-content: center;
 }
 
-// .forgot:hover {
-//     border: 1px solid transparent;
-//     background-color: var(--bg-color);
-// }
-
 .actions {
     width: 100%;
     display: flex;
@@ -152,7 +147,7 @@ input:focus {
 
   input[type="checkbox"] {
     position: absolute;
-    opacity: 0;          // versteckt, bleibt aber fokussierbar
+    opacity: 0;
     width: 0;
     height: 0;
   }
@@ -166,7 +161,7 @@ input:focus {
 
     &::before {
       content: "";
-      width: 24px;         // an deine Bildgröße anpassen
+      width: 24px;
       height: 24px;
       flex-shrink: 0;
       background-image: url("/img/icons/check.png");
@@ -175,17 +170,14 @@ input:focus {
     }
   }
 
-  // hover (unchecked)
   input:not(:checked) + label:hover::before {
     background-image: url("/img/icons/check_hover.png");
   }
 
-  // checked
   input:checked + label::before {
     background-image: url("/img/icons/check_checked.png");
   }
 
-  // checked + hover
   input:checked + label:hover::before {
     background-image: url("/img/icons/check_checked_hover.png");
   }
@@ -237,14 +229,11 @@ input:focus {
     margin-top: 4px;
 }
 
-
 .avatar-big {
     width: 168px;
     height: 168px;
     border-radius: 500px;
 }
-
-
 
 @media screen and (max-width:768px) {
 

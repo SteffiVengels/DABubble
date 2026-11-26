@@ -1,0 +1,14 @@
+.reaction-icon {
+    background-image: url('/img/icons/sentiment_satisfied.png');
+    width: 40px;
+    height: 40px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 24px 24px;
+
+    &:hover {
+        background-image: url('/img/icons/sentiment_satisfied_hover2.png') !important;
+        background-color: var(--bg-color) !important;
+    }
+}

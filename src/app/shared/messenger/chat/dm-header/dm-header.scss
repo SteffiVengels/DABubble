@@ -1,0 +1,17 @@
+@use '../../user-status';
+@use '../../member-search';
+@use '../../chat-head';
+
+:host {
+    display: block;
+}
+
+.panel-anchor {
+    position: relative;
+
+    >.direct-message {
+        margin: 0;
+        font-weight: 700;
+        font-size: 1.5rem;
+    }
+}

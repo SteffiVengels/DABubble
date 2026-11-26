@@ -41,11 +41,15 @@
         <app-workspace-menu></app-workspace-menu>
     </nav>
     }
-    <main><app-main-chat></app-main-chat></main>
+    <main><app-main-chat (showProfile)="showUserProfile($event)"></app-main-chat></main>
     <aside>
-        <app-secondary-chat></app-secondary-chat>
+        <app-threads></app-threads>
     </aside>
 </section>
+
+<app-user-profile-dialog (messageClick)="openMessage($event)" />
+<app-profile-dialog #ownChatProfile [centered]="true" [showMessageButton]="true"
+    (messageClick)="openMessage(supabase.currentUserId() ?? '')" />
 <button type="button" class="workspace-menu-toggle" aria-controls="workspaceNav" [attr.aria-expanded]="isOpen"
     (click)="isOpen = !isOpen">
     <span>{{ isOpen ? 'Workspace-Menü schließen' : 'Workspace-Menü öffnen' }}</span>

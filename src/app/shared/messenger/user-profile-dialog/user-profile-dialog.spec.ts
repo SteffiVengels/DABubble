@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SecondaryChat } from './secondary-chat';
+import { UserProfileDialog } from './user-profile-dialog';
 
-describe('SecondaryChat', () => {
-  let component: SecondaryChat;
-  let fixture: ComponentFixture<SecondaryChat>;
+describe('UserProfileDialog', () => {
+  let component: UserProfileDialog;
+  let fixture: ComponentFixture<UserProfileDialog>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SecondaryChat]
+      imports: [UserProfileDialog]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(SecondaryChat);
+    fixture = TestBed.createComponent(UserProfileDialog);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

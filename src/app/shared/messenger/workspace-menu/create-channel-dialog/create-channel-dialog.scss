@@ -4,15 +4,14 @@
 @use '../../scrollbar';
 
 :host {
-    // Host-Element soll im Layout keinen Platz einnehmen
     display: contents;
 }
 
 .create-channel {
     margin: auto;
     overflow: visible;
-    width: min(880px, 100% - 32px); // 880px, auf kleinen Viewports schmaler (16px Rand pro Seite)
-    max-width: none; // Browser-Standard max-width vom Dialog überschreiben
+    width: min(880px, 100% - 32px);
+    max-width: none;
     background-color: white;
     border: none;
     padding: 0;
