@@ -14,7 +14,7 @@
 
 <app-message-list [messages]="chatState.threadReplies()" [previousDate]="parent.created_at"
     (showProfile)="showProfile.emit($event)">
-    <div listHeader>
+    <div class="list-header" listHeader>
         <app-message-item [message]="parent" [inThread]="true" (showProfile)="showProfile.emit($event)" />
 
         <div class="thread-divider">
